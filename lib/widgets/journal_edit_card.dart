@@ -16,19 +16,62 @@ class JournalEditCard extends StatefulWidget {
 }
 
 class _JournalEditCard extends State<JournalEditCard> {
+  GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+  void myMoodFunction(int moodLevel) {
+    widget.journalEntry.emotionalLevel = moodLevel;
+  }
+
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext context) => Scaffold(
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.journalEntry.id),
+      ),
+      
+      body: Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Padding(
-              padding: EdgeInsetsDirectional.all(10),
-              child: Text(widget.journalEntry.timeStamp.toLocal().toString())),
-          Padding(
-              padding: EdgeInsetsDirectional.all(10),
-              child: JournalTextWidget(journalEntry: widget.journalEntry)),
-          FloatingActionButton(
-              onPressed: () async => GetIt.instance
-                  .get<JournalEntryService>()
-                  .save(widget.journalEntry))
+          SizedBox(height: 10),
+          TextFormField(
+            decoration: InputDecoration(labelText: 'When'),
+            initialValue: widget.journalEntry.timeStamp.toLocal().toString(),
+            readOnly: true,
+          ),
+          SizedBox(height: 10),
+          TextFormField(
+            decoration: InputDecoration(labelText: 'How are you today?'),
+            initialValue: widget.journalEntry.text,
+            readOnly: false,
+            onChanged: (value) {
+              widget.journalEntry.text = value;
+            },
+          ),
+          Column(
+            children: [
+              Row(
+                children: [
+                  TextButton(
+                      onPressed: () => myMoodFunction(1), child: Text('😩')),
+                  TextButton(
+                      onPressed: () => myMoodFunction(2), child: Text('☹️')),
+                  TextButton(
+                      onPressed: () => myMoodFunction(3), child: Text('😐')),
+                  TextButton(
+                      onPressed: () => myMoodFunction(4), child: Text('😃')),
+                  TextButton(
+                      onPressed: () => myMoodFunction(5), child: Text('😁')),
+                ],
+              )
+            ],
+          )
         ],
-      );
+      )),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.save),
+          onPressed: () async => await GetIt.instance
+              .get<JournalEntryService>()
+              .save(widget.journalEntry)
+              .then((value) => Navigator.of(context).pop())));
 }

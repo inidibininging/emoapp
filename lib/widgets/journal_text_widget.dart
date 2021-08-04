@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:emoapp/model/journal_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -30,6 +32,7 @@ class _JournalTextWidget extends State<JournalTextWidget> {
   @override
   Widget build(BuildContext context) => TextField(
         controller: _textEditingController,
+        selectionHeightStyle: BoxHeightStyle.max,
         onChanged: (value) => widget.journalEntry.text = value,
         onSubmitted: (value) => widget.journalEntry.text = value,
       );

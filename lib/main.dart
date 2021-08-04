@@ -83,11 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Text(
-              'Entries',
-            ),
             FutureBuilder<Iterable<JournalEntry>>(
                 future: GetIt.instance.get<JournalEntryService>().getAll(),
                 builder: (context, snapshot) =>
@@ -102,17 +99,17 @@ class _MyHomePageState extends State<MyHomePage> {
           var journalEntryId = await GetIt.instance
               .get<JournalEntryService>()
               .create('YOUR EMOTIONS HERE', 5, []);
-          var journalEntry = await GetIt.instance
+          await GetIt.instance
               .get<JournalEntryService>()
-              .get(journalEntryId);
-          await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => JournalEditCard(
-                      key: Key(journalEntry.id),
-                      journalEntry: journalEntry))).then((value) {
-            setState(() {});
-          });
+              .get(journalEntryId)
+              .then((journalEntry) async => await Navigator.of(context)
+                      .push(MaterialPageRoute(
+                          builder: (context) => JournalEditCard(
+                              key: Key(journalEntry.id),
+                              journalEntry: journalEntry)))
+                      .then((value) {
+                    setState(() {});
+                  }));
         },
         tooltip: 'Add',
         child: Icon(Icons.add),
