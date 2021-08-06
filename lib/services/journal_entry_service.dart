@@ -12,7 +12,7 @@ class JournalEntryService {
 
   Future<String> create(
       String text, int emotionalLevel, List<String> hashtags) async {
-    if (text.isEmpty) throw Exception('Journal entry is empty');
+    // if (text.isEmpty) throw Exception('Journal entry is empty');
     if (emotionalLevel < 0) throw Exception('No emotional level given');
     return await Hive.openBox<JournalEntry>(boxName).then((modelBox) async =>
         await Future.sync(() => Random().nextInt(666).toString()).then((id) =>

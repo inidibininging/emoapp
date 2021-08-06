@@ -13,7 +13,7 @@ class JournalEntry {
   @HiveField(3)
   int emotionalLevel;
   @HiveField(4)
-  final List<String> hashtags;
+  List<String> hashtags;
   JournalEntry(
       {required this.id,
       required this.text,

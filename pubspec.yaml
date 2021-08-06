@@ -34,6 +34,8 @@ dependencies:
       url: git://github.com/hivedb/hive.git
       path: hive_flutter
   get_it: ^7.2.0
+  emojis_null_safe: ^0.0.2
+  provider: ^5.0.0
 
   
 

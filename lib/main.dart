@@ -1,4 +1,5 @@
 import 'package:emoapp/model/journal_entry.dart';
+import 'package:emoapp/view_model/journal_entry_view_model.dart';
 import 'package:emoapp/services/journal_entry_service.dart';
 import 'package:emoapp/widgets/journal_edit_card.dart';
 import 'package:get_it/get_it.dart';
@@ -6,6 +7,7 @@ import 'package:emoapp/services/service_locator.dart';
 import 'package:emoapp/widgets/journal_list.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   // await Hive.initFlutter('emo');
@@ -90,15 +92,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 builder: (context, snapshot) =>
                     !snapshot.hasData || snapshot.hasError
                         ? CircularProgressIndicator()
-                        : JournalList(entries: snapshot.data ?? []))
+                        : ChangeNotifierProvider(create: (_) {
+                            return JournalList(entries: snapshot.data ?? []);
+                          }))
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          var journalEntryId = await GetIt.instance
-              .get<JournalEntryService>()
-              .create('YOUR EMOTIONS HERE', 5, []);
+          var journalEntryId =
+              await GetIt.instance.get<JournalEntryService>().create('', 5, []);
           await GetIt.instance
               .get<JournalEntryService>()
               .get(journalEntryId)
@@ -106,7 +109,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       .push(MaterialPageRoute(
                           builder: (context) => JournalEditCard(
                               key: Key(journalEntry.id),
-                              journalEntry: journalEntry)))
+                              journalEntry:
+                                  JournalEntryViewModel(journalEntry))))
                       .then((value) {
                     setState(() {});
                   }));
