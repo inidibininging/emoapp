@@ -5,9 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-class JournalList extends StatelessWidget {
+class JournalList extends StatefulWidget {
   JournalList();
 
+  @override
+  State<StatefulWidget> createState() => _JournalList();
+}
+
+class _JournalList extends State<JournalList> {
   @override
   Widget build(BuildContext context) =>
       ChangeNotifierProvider<JournalEntryListViewModel>(

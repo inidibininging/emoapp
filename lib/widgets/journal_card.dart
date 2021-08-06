@@ -5,14 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-class JournalCard extends StatelessWidget {
+class JournalCard extends StatefulWidget {
   final JournalEntry journalEntry;
   JournalCard({required this.journalEntry});
 
   @override
+  State<StatefulWidget> createState() => _JournalCard();
+}
+
+class _JournalCard extends State<JournalCard> {
+  @override
   Widget build(BuildContext context) =>
       ChangeNotifierProvider<JournalEntryViewModel>(
-          create: (_) => JournalEntryViewModel(journalEntry),
+          create: (_) => JournalEntryViewModel(widget.journalEntry),
           child: Consumer<JournalEntryViewModel>(
               builder: (context, viewModel, nullableWidget) => Card(
                     color: Colors.deepPurple,
@@ -21,9 +26,11 @@ class JournalCard extends StatelessWidget {
                           ' ' +
                           viewModel.text),
                       subtitle: Text(viewModel.timeStamp),
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) =>
-                              JournalEditCard(journalEntry: viewModel))),
+                      onTap: () => Navigator.of(context)
+                          .push(MaterialPageRoute(
+                              builder: (context) =>
+                                  JournalEditCard(journalEntry: viewModel)))
+                          .then((value) => setState(() {})),
                     ),
                   )));
 }
