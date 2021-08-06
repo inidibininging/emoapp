@@ -10,15 +10,20 @@ class JournalCard extends StatelessWidget {
   JournalCard({required this.journalEntry});
 
   @override
-  Widget build(BuildContext context) => Consumer<Card>(
-      builder: (context, widget, nullableWidget) => Card(
-            color: Colors.amberAccent,
-            child: ListTile(
-              title: Text(journalEntry.text),
-              subtitle: Text(journalEntry.timeStamp.toLocal().toString()),
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => JournalEditCard(
-                      journalEntry: JournalEntryViewModel(journalEntry)))),
-            ),
-          ));
+  Widget build(BuildContext context) =>
+      ChangeNotifierProvider<JournalEntryViewModel>(
+          create: (_) => JournalEntryViewModel(journalEntry),
+          child: Consumer<JournalEntryViewModel>(
+              builder: (context, viewModel, nullableWidget) => Card(
+                    color: Colors.deepPurple,
+                    child: ListTile(
+                      title: Text(viewModel.emotionalLevelAsIcon +
+                          ' ' +
+                          viewModel.text),
+                      subtitle: Text(viewModel.timeStamp),
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              JournalEditCard(journalEntry: viewModel))),
+                    ),
+                  )));
 }

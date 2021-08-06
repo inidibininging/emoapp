@@ -21,6 +21,7 @@ class JournalEntryViewModel extends ChangeNotifier {
   int get emotionalLevel => _model.emotionalLevel;
   set emotionalLevel(int level) {
     _model.emotionalLevel = level;
+    notifyListeners();
   }
 
   String get emotionalLevelAsIcon {
@@ -38,6 +39,12 @@ class JournalEntryViewModel extends ChangeNotifier {
       default:
         return "?";
     }
+  }
+
+  List<String> get hashtags => _model.hashtags;
+  set hashtags(List<String> value) {
+    _model.hashtags = value;
+    notifyListeners();
   }
 
   JournalEntryViewModel(JournalEntry model) {

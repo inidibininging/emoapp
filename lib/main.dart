@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:emoapp/model/journal_entry.dart';
 import 'package:emoapp/view_model/journal_entry_view_model.dart';
 import 'package:emoapp/services/journal_entry_service.dart';
@@ -7,11 +9,21 @@ import 'package:emoapp/services/service_locator.dart';
 import 'package:emoapp/widgets/journal_list.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  Map<Permission, PermissionStatus> statuses = await [
+    Permission.storage,
+  ].request();
+
   // await Hive.initFlutter('emo');
-  await Hive.initFlutter('emo');
+  Directory? appDocDir = await getApplicationDocumentsDirectory();
+  String appDocPath = appDocDir.path;
+
+  await Hive.initFlutter(appDocPath);
   ServiceLocatorRegistrar().register();
   runApp(MyApp());
 }
@@ -67,37 +79,28 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            FutureBuilder<Iterable<JournalEntry>>(
-                future: GetIt.instance.get<JournalEntryService>().getAll(),
-                builder: (context, snapshot) =>
-                    !snapshot.hasData || snapshot.hasError
-                        ? CircularProgressIndicator()
-                        : ChangeNotifierProvider(create: (_) {
-                            return JournalList(entries: snapshot.data ?? []);
-                          }))
-          ],
-        ),
-      ),
+      body: Center(child: JournalList()
+          // Center is a layout widget. It takes a single child and positions it
+          // in the middle of the parent.
+          // child: Column(
+          //   // Column is also a layout widget. It takes a list of children and
+          //   // arranges them vertically. By default, it sizes itself to fit its
+          //   // children horizontally, and tries to be as tall as its parent.
+          //   //
+          //   // Invoke "debug painting" (press "p" in the console, choose the
+          //   // "Toggle Debug Paint" action from the Flutter Inspector in Android
+          //   // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+          //   // to see the wireframe for each widget.
+          //   //
+          //   // Column has various properties to control how it sizes itself and
+          //   // how it positions its children. Here we use mainAxisAlignment to
+          //   // center the children vertically; the main axis here is the vertical
+          //   // axis because Columns are vertical (the cross axis would be
+          //   // horizontal).
+          //   mainAxisAlignment: MainAxisAlignment.start,
+          //   children: <Widget>[JournalList()],
+          // ),
+          ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           var journalEntryId =

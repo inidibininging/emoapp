@@ -1,5 +1,6 @@
-import 'dart:math';
-
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/uuid_util.dart';
 import 'package:emoapp/model/journal_entry.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -15,26 +16,25 @@ class JournalEntryService {
     // if (text.isEmpty) throw Exception('Journal entry is empty');
     if (emotionalLevel < 0) throw Exception('No emotional level given');
     return await Hive.openBox<JournalEntry>(boxName).then((modelBox) async =>
-        await Future.sync(() => Random().nextInt(666).toString()).then((id) =>
-            modelBox
-                .put(
-                    id,
-                    JournalEntry(
-                        id: id,
-                        text: text,
-                        timeStamp: DateTime.now(),
-                        emotionalLevel: emotionalLevel,
-                        hashtags: hashtags))
-                .then((value) => modelBox.get(id))
-                // .then((newModel) async {
-                //       if (newModel == null)
-                //         throw Exception('Error, cannot get model');
-                //       newModel.id = newModel.id.toString();
-                //       await modelBox.put(id, newModel);
-                //       return id;
-                //     })
-                .then((value) async =>
-                    await modelBox.close().then((nothing) => id))));
+        await Future.sync(() => Uuid().v4()).then((id) => modelBox
+            .put(
+                id,
+                JournalEntry(
+                    id: id,
+                    text: text,
+                    timeStamp: DateTime.now(),
+                    emotionalLevel: emotionalLevel,
+                    hashtags: hashtags))
+            .then((value) => modelBox.get(id))
+            // .then((newModel) async {
+            //       if (newModel == null)
+            //         throw Exception('Error, cannot get model');
+            //       newModel.id = newModel.id.toString();
+            //       await modelBox.put(id, newModel);
+            //       return id;
+            //     })
+            .then((value) async =>
+                await modelBox.close().then((nothing) => id))));
   }
 
   Future<void> save(JournalEntry journalEntry) async {
@@ -54,8 +54,9 @@ class JournalEntryService {
       : false;
 
   Future<Iterable<JournalEntry>> getAll() async =>
-      await Hive.openBox<JournalEntry>(boxName, path: 'emo')
-          .then((modelBox) => modelBox.values);
+      await getApplicationDocumentsDirectory().then((path) => path.path).then(
+          (path) async => await Hive.openBox<JournalEntry>(boxName, path: path)
+              .then((modelBox) => modelBox.values));
 
   Future<JournalEntry> get(String id) async =>
       await Hive.openBox<JournalEntry>(boxName).then((modelBox) {
