@@ -77,44 +77,57 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(child: JournalList(GlobalKey())),
       floatingActionButton:
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        FloatingActionButton(
-            onPressed: () async {
-              await GetIt.instance.get<JournalEntryService>().destroyAll();
-              setState(() {});
-            },
-            child: Icon(Icons.delete_forever)),
-        FloatingActionButton(
-            onPressed: () async {
-              setState(() {});
-            },
-            child: Icon(Icons.refresh)),
-        FloatingActionButton(
-          onPressed: () async {
-            var journalEntry = await GetIt.instance
-                .get<JournalEntryService>()
-                .createLocally('', 5, []);
-            Navigator.of(context)
-                .push(MaterialPageRoute(
-                    builder: (context) => JournalEditCard(
-                        key: Key(journalEntry.id), journalEntry: journalEntry)))
-                .then((value) {
-              setState(() {});
-            });
-          },
-          tooltip: 'Add',
-          child: Icon(Icons.add),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FloatingActionButton(
+              onPressed: () async {
+                await GetIt.instance.get<JournalEntryService>().destroyAll();
+                setState(() {});
+              },
+              child: Icon(Icons.delete_forever)),
         ),
-        FloatingActionButton(
-          onPressed: () async {
-            var entries =
-                (await GetIt.instance.get<JournalEntryService>().getAll())
-                    .toList();
-            entries.sort((a, b) => a.timeStamp.compareTo(b.timeStamp));
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => JournalEntryStats(entries: entries)));
-          },
-          tooltip: 'Stats',
-          child: Icon(Icons.query_stats),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FloatingActionButton(
+              onPressed: () async {
+                setState(() {});
+              },
+              child: Icon(Icons.refresh)),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FloatingActionButton(
+            onPressed: () async {
+              var journalEntry = await GetIt.instance
+                  .get<JournalEntryService>()
+                  .createLocally('', 5, []);
+              Navigator.of(context)
+                  .push(MaterialPageRoute(
+                      builder: (context) => JournalEditCard(
+                          key: Key(journalEntry.id),
+                          journalEntry: journalEntry)))
+                  .then((value) {
+                setState(() {});
+              });
+            },
+            tooltip: 'Add',
+            child: Icon(Icons.add),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FloatingActionButton(
+            onPressed: () async {
+              var entries =
+                  (await GetIt.instance.get<JournalEntryService>().getAll())
+                      .toList();
+              entries.sort((a, b) => a.timeStamp.compareTo(b.timeStamp));
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => JournalEntryStats(entries: entries)));
+            },
+            tooltip: 'Stats',
+            child: Icon(Icons.query_stats),
+          ),
         ),
       ]), // This trailing comma makes auto-formatting nicer for build methods.
     );
