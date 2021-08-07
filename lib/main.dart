@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:emoapp/model/journal_entry.dart';
 import 'package:emoapp/view_model/journal_entry_view_model.dart';
 import 'package:emoapp/services/journal_entry_service.dart';
 import 'package:emoapp/widgets/journal_edit_card.dart';
+import 'package:emoapp/widgets/journal_entry_stats.dart';
+// import 'package:emoapp/widgets/journal_entry_chart.dart';
 import 'package:get_it/get_it.dart';
 import 'package:emoapp/services/service_locator.dart';
 import 'package:emoapp/widgets/journal_list.dart';
@@ -67,60 +70,53 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(child: JournalList()
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
-          // child: Column(
-          //   // Column is also a layout widget. It takes a list of children and
-          //   // arranges them vertically. By default, it sizes itself to fit its
-          //   // children horizontally, and tries to be as tall as its parent.
-          //   //
-          //   // Invoke "debug painting" (press "p" in the console, choose the
-          //   // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          //   // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          //   // to see the wireframe for each widget.
-          //   //
-          //   // Column has various properties to control how it sizes itself and
-          //   // how it positions its children. Here we use mainAxisAlignment to
-          //   // center the children vertically; the main axis here is the vertical
-          //   // axis because Columns are vertical (the cross axis would be
-          //   // horizontal).
-          //   mainAxisAlignment: MainAxisAlignment.start,
-          //   children: <Widget>[JournalList()],
-          // ),
-          ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          var journalEntryId =
-              await GetIt.instance.get<JournalEntryService>().create('', 5, []);
-          await GetIt.instance
-              .get<JournalEntryService>()
-              .get(journalEntryId)
-              .then((journalEntry) async => await Navigator.of(context)
-                      .push(MaterialPageRoute(
-                          builder: (context) => JournalEditCard(
-                              key: Key(journalEntry.id),
-                              journalEntry:
-                                  JournalEntryViewModel(journalEntry))))
-                      .then((value) {
-                    setState(() {});
-                  }));
-        },
-        tooltip: 'Add',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: Center(child: JournalList(GlobalKey())),
+      floatingActionButton:
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        FloatingActionButton(
+            onPressed: () async {
+              await GetIt.instance.get<JournalEntryService>().destroyAll();
+              setState(() {});
+            },
+            child: Icon(Icons.delete_forever)),
+        FloatingActionButton(
+            onPressed: () async {
+              setState(() {});
+            },
+            child: Icon(Icons.refresh)),
+        FloatingActionButton(
+          onPressed: () async {
+            var journalEntry = await GetIt.instance
+                .get<JournalEntryService>()
+                .createLocally('', 5, []);
+            Navigator.of(context)
+                .push(MaterialPageRoute(
+                    builder: (context) => JournalEditCard(
+                        key: Key(journalEntry.id), journalEntry: journalEntry)))
+                .then((value) {
+              setState(() {});
+            });
+          },
+          tooltip: 'Add',
+          child: Icon(Icons.add),
+        ),
+        FloatingActionButton(
+          onPressed: () async {
+            var entries =
+                (await GetIt.instance.get<JournalEntryService>().getAll())
+                    .toList();
+            entries.sort((a, b) => a.timeStamp.compareTo(b.timeStamp));
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => JournalEntryStats(entries: entries)));
+          },
+          tooltip: 'Stats',
+          child: Icon(Icons.query_stats),
+        ),
+      ]), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

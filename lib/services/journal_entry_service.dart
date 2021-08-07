@@ -11,6 +11,19 @@ class JournalEntryService {
     Hive.registerAdapter<JournalEntry>(JournalEntryAdapter());
   }
 
+  Future<JournalEntry> createLocally(
+      String text, int emotionalLevel, List<String> hashtags) async {
+    // if (text.isEmpty) throw Exception('Journal entry is empty');
+    if (emotionalLevel < 0) throw Exception('No emotional level given');
+
+    return JournalEntry(
+        id: Uuid().v4(),
+        text: text,
+        timeStamp: DateTime.now(),
+        emotionalLevel: emotionalLevel,
+        hashtags: hashtags);
+  }
+
   Future<String> create(
       String text, int emotionalLevel, List<String> hashtags) async {
     // if (text.isEmpty) throw Exception('Journal entry is empty');
@@ -26,13 +39,6 @@ class JournalEntryService {
                     emotionalLevel: emotionalLevel,
                     hashtags: hashtags))
             .then((value) => modelBox.get(id))
-            // .then((newModel) async {
-            //       if (newModel == null)
-            //         throw Exception('Error, cannot get model');
-            //       newModel.id = newModel.id.toString();
-            //       await modelBox.put(id, newModel);
-            //       return id;
-            //     })
             .then((value) async =>
                 await modelBox.close().then((nothing) => id))));
   }
@@ -42,16 +48,35 @@ class JournalEntryService {
       throw Exception('Journal entry text is empty');
     if (journalEntry.emotionalLevel < 0)
       throw Exception('No emotional level given');
-    return await Hive.openBox<JournalEntry>(boxName).then((modelBox) => modelBox
-        .put(journalEntry.id, journalEntry)
-        .then((value) async => await modelBox.close()));
+    return await Hive.openBox<JournalEntry>(boxName).then((modelBox) async {
+      var model = modelBox.get(journalEntry.id);
+      if (model == null)
+        await modelBox.put(journalEntry.id, journalEntry);
+      else
+        await modelBox.put(journalEntry.id, journalEntry);
+      return modelBox;
+    }).then((modelBox) async => await modelBox.close());
   }
 
-  Future<bool> destroy(int id) async => await Hive.boxExists(boxName)
-      ? await Hive.openBox(boxName)
-          .then((modelBox) => modelBox.deleteAt(id))
-          .then((value) => true)
-      : false;
+  Future<int> destroyAll() async => await Hive.boxExists(boxName)
+      ? await Hive.openBox<JournalEntry>(boxName)
+          .then((modelBox) async => await modelBox.clear())
+      : 0;
+
+  Future<bool> destroy(String id) async {
+    if (await Hive.boxExists(boxName)) {
+      Box<JournalEntry> box;
+      if (Hive.isBoxOpen(boxName))
+        box = await Future.sync(() => Hive.box<JournalEntry>(boxName));
+      else
+        box = await Hive.openBox<JournalEntry>(boxName);
+
+      await box.delete(id);
+      return box.get(id) == null;
+    } else {
+      throw Exception('Box does not exist');
+    }
+  }
 
   Future<Iterable<JournalEntry>> getAll() async =>
       await getApplicationDocumentsDirectory().then((path) => path.path).then(
@@ -60,6 +85,9 @@ class JournalEntryService {
 
   Future<JournalEntry> get(String id) async =>
       await Hive.openBox<JournalEntry>(boxName).then((modelBox) {
+        modelBox.keys.forEach((element) {
+          print(element);
+        });
         var leModel = modelBox.get(id);
         if (leModel == null) throw Exception('FUCK!');
         return leModel;

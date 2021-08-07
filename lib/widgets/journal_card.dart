@@ -7,13 +7,14 @@ import 'package:provider/provider.dart';
 
 class JournalCard extends StatefulWidget {
   final JournalEntry journalEntry;
-  JournalCard({required this.journalEntry});
+  JournalCard({Key? key, required this.journalEntry}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _JournalCard();
 }
 
 class _JournalCard extends State<JournalCard> {
+  final key = GlobalKey();
   @override
   Widget build(BuildContext context) =>
       ChangeNotifierProvider<JournalEntryViewModel>(
@@ -28,9 +29,9 @@ class _JournalCard extends State<JournalCard> {
                       subtitle: Text(viewModel.timeStamp),
                       onTap: () => Navigator.of(context)
                           .push(MaterialPageRoute(
-                              builder: (context) =>
-                                  JournalEditCard(journalEntry: viewModel)))
-                          .then((value) => setState(() {})),
+                              builder: (context) => JournalEditCard(
+                                  journalEntry: widget.journalEntry)))
+                          .then((value) async => await viewModel.refresh()),
                     ),
                   )));
 }
