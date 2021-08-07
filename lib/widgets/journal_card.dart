@@ -21,8 +21,19 @@ class _JournalCard extends State<JournalCard> {
           create: (_) => JournalEntryViewModel(widget.journalEntry),
           child: Consumer<JournalEntryViewModel>(
               builder: (context, viewModel, nullableWidget) => Card(
-                    color: Colors.deepPurple,
+                  color: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.deepPurpleAccent,
+                        Colors.deepPurple,
+                      ],
+                    )),
                     child: ListTile(
+                      tileColor: Colors.transparent,
                       title: Text(viewModel.emotionalLevelAsIcon +
                           ' ' +
                           viewModel.text),
@@ -33,5 +44,5 @@ class _JournalCard extends State<JournalCard> {
                                   journalEntry: widget.journalEntry)))
                           .then((value) async => await viewModel.refresh()),
                     ),
-                  )));
+                  ))));
 }
