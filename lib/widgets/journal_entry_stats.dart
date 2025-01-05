@@ -28,7 +28,7 @@ class JournalEntryStats extends StatelessWidget {
             // gridLineLabelPrecision: 3,
             // enableGridLines: true,
             averageLine: true,
-            averageLable: true,
+            //averageLable: true,
             // kLine: ['max', 'min', 'first', 'last'],
             // // max: 50.5,
             // // min: 10.0,

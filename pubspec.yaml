@@ -28,11 +28,6 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  hive:
-  hive_flutter:
-    git:
-      url: git://github.com/hivedb/hive.git
-      path: hive_flutter
   get_it: ^7.2.0
   emojis_null_safe: ^0.0.2
   provider: ^5.0.0
@@ -42,6 +37,9 @@ dependencies:
   permission_handler: ^8.1.4+2
   intl: ^0.17.0
   chart_sparkline: ^1.0.5
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  llama_cpp_dart: ^0.0.8
   
 
   
@@ -49,11 +47,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  hive_generator:
-    git:
-      url: git://github.com/hivedb/hive.git
-      path: hive_generator
-  build_runner: ^1.10.0
+  build_runner: ^2.4.14
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

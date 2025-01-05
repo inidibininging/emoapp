@@ -1,14 +1,35 @@
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
-import 'package:uuid/uuid_util.dart';
 import 'package:emoapp/model/journal_entry.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter/foundation.dart';
+import 'package:llama_cpp_dart/llama_cpp_dart.dart';
+import 'package:llama_cpp_dart/src/chatml_format.dart';
 
 class JournalEntryService {
   final String boxName = 'JournalEntry';
   JournalEntryService() {
     Hive.registerAdapter<JournalEntry>(JournalEntryAdapter());
+
+    print('load command');
+    final loadCommand = LlamaLoad(
+      path: "/media/develop/d/models/Llama-3.2-3B-Instruct-Q4_K_M.gguf",
+      modelParams: ModelParams(),
+      contextParams: ContextParams(),
+      samplingParams: SamplerParams(),
+      format: ChatMLFormat(),
+    );
+    print('llama parent');
+    final llamaParent = LlamaParent(loadCommand);
+
+    print('init...');
+    llamaParent.init().catchError((Object ex) {
+      print(ex);
+    }).then((_) {
+      llamaParent.stream.listen((response) => print(response));
+      llamaParent.sendPrompt("2 * 2 = ?");
+    });
   }
 
   Future<JournalEntry> createLocally(
@@ -78,10 +99,29 @@ class JournalEntryService {
     }
   }
 
-  Future<Iterable<JournalEntry>> getAll() async =>
-      await getApplicationDocumentsDirectory().then((path) => path.path).then(
-          (path) async => await Hive.openBox<JournalEntry>(boxName, path: path)
-              .then((modelBox) => modelBox.values));
+  Future<Iterable<JournalEntry>> getAll() async => [
+        JournalEntry(
+            id: '1234',
+            text: 'hello',
+            timeStamp: DateTime.now(),
+            emotionalLevel: 0)
+      ];
+
+  Future<Iterable<JournalEntry>> _getAll() async =>
+      await getApplicationDocumentsDirectory()
+          .catchError((Object ex) => [
+                JournalEntry(
+                    id: UniqueKey().toString(),
+                    text: ex.toString(),
+                    timeStamp: DateTime.now(),
+                    emotionalLevel: 0)
+              ])
+          .then((path) async =>
+              await Hive.openBox<JournalEntry>(boxName).then((modelBox) {
+                debugPrint(
+                    modelBox.values.map((t) => "${t.text} ${t.id}").join('\n'));
+                return modelBox.values;
+              }));
 
   Future<JournalEntry> get(String id) async =>
       await Hive.openBox<JournalEntry>(boxName).then((modelBox) {

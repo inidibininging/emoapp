@@ -3,8 +3,8 @@ import 'package:emoapp/view_model/journal_entry_view_model.dart';
 import 'package:emojis_null_safe/emojis.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:hashtagable/functions.dart';
-import 'package:hashtagable/widgets/hashtag_text_field.dart';
+// import 'package:hashtagable/functions.dart';
+// import 'package:hashtagable/widgets/hashtag_text_field.dart';
 import 'package:provider/provider.dart';
 
 class JournalEditCard extends StatefulWidget {
@@ -56,23 +56,24 @@ class _JournalEditCard extends State<JournalEditCard> {
                             readOnly: true,
                           ),
                           SizedBox(height: 10),
-                          HashTagTextField(
+                          TextFormField(
                             maxLines: 30,
                             decoration: InputDecoration(
                                 labelText: 'How are you today?'),
                             // initialValue: widget.journalEntry.text,
                             readOnly: false,
                             controller: _controller,
+
                             onChanged: (value) {
                               viewModel.text = value;
                             },
 
-                            onDetectionTyped: (text) {
-                              print(text);
-                            },
-                            onDetectionFinished: () {
-                              print('finished');
-                            },
+                            //onDetectionTyped: (text) {
+                            //  print(text);
+                            //},
+                            //onDetectionFinished: () {
+                            //  print('finished');
+                            //},
                           ),
                           Row(children: [
                             Container(
@@ -109,10 +110,12 @@ class _JournalEditCard extends State<JournalEditCard> {
                         ],
                       ))),
               floatingActionButton: FloatingActionButton(
+                  heroTag: UniqueKey(),
+                  key: UniqueKey(),
                   child: Icon(Icons.save),
                   onPressed: () async => Future.sync(() {
-                        viewModel.hashtags =
-                            extractHashTags(viewModel.text).toList();
+                        viewModel.hashtags = [];
+                            //extractHashTags(viewModel.text).toList();
                       }).then((value) async => await viewModel
                           .save()
                           .then((value) => Navigator.of(context).pop()))))));

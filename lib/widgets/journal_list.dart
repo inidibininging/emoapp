@@ -39,9 +39,9 @@ class _JournalList extends State<JournalList> {
                                 itemCount: leList.length,
                                 itemBuilder: (context, index) {
                                   return Dismissible(
-                                    key: GlobalKey(),
+                                    key: Key(index.toString()),
                                     child: JournalCard(
-                                        key: GlobalKey(),
+                                        key: Key(index.toString()),
                                         journalEntry: leList.elementAt(index)),
                                     onDismissed:
                                         (DismissDirection direction) async {

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-
+import 'package:emoapp/widgets/floating_action_button_workaround.dart';
 import 'package:emoapp/model/journal_entry.dart';
 import 'package:emoapp/view_model/journal_entry_view_model.dart';
 import 'package:emoapp/services/journal_entry_service.dart';
@@ -13,20 +13,21 @@ import 'package:emoapp/widgets/journal_list.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Map<Permission, PermissionStatus> statuses = await [
-    Permission.storage,
-  ].request();
+  //Map<Permission, PermissionStatus> statuses = await [
+  //  Permission.storage,
+  //].request();
 
   // await Hive.initFlutter('emo');
-  Directory? appDocDir = await getApplicationDocumentsDirectory();
-  String appDocPath = appDocDir.path;
+  //Directory? appDocDir = await getApplicationDocumentsDirectory();
+  //String appDocPath = appDocDir.path;
 
-  await Hive.initFlutter(appDocPath);
+  await Hive.initFlutter();
   ServiceLocatorRegistrar().register();
   runApp(MyApp());
 }
@@ -40,10 +41,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           primarySwatch: Colors.deepPurple,
           secondaryHeaderColor: Colors.deepPurple,
-          accentColor: Colors.deepPurpleAccent,
+          //accentColor: Colors.deepPurpleAccent,
           primaryColorDark: Colors.deepPurple,
-          brightness: Brightness.dark,
-          backgroundColor: Colors.black),
+          brightness: Brightness.dark),
+      //backgroundColor: Colors.black),
       home: MyHomePage(title: 'EMO APP'),
     );
   }
@@ -79,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: FloatingActionButton(
+          child: FloatingActionButtonWorkaround(
               onPressed: () async {
                 await GetIt.instance.get<JournalEntryService>().destroyAll();
                 setState(() {});
@@ -88,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: FloatingActionButton(
+          child: FloatingActionButtonWorkaround(
               onPressed: () async {
                 setState(() {});
               },
@@ -96,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: FloatingActionButton(
+          child: FloatingActionButtonWorkaround(
             onPressed: () async {
               var journalEntry = await GetIt.instance
                   .get<JournalEntryService>()
@@ -116,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: FloatingActionButton(
+          child: FloatingActionButtonWorkaround(
             onPressed: () async {
               var entries =
                   (await GetIt.instance.get<JournalEntryService>().getAll())
