@@ -4,6 +4,12 @@ part 'emotion_type.g.dart';
 
 @HiveType(typeId: 1)
 class EmotionType {
+  EmotionType(
+      {required this.emotion,
+      required this.icon,
+      required this.minEmotionalLevel,
+      required this.maxEmotionalLevel,
+      required this.emotionalLevel,});
   @HiveField(0)
   final String emotion;
   @HiveField(1)
@@ -14,10 +20,4 @@ class EmotionType {
   final int maxEmotionalLevel;
   @HiveField(4)
   final int emotionalLevel;
-  EmotionType(
-      {required this.emotion,
-      required this.icon,
-      required this.minEmotionalLevel,
-      required this.maxEmotionalLevel,
-      required this.emotionalLevel});
 }

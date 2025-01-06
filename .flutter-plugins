@@ -1,8 +1,10 @@
 # This is a generated file; do not edit or check into version control.
-llama_cpp_dart=/home/develop/.pub-cache/hosted/pub.dev/llama_cpp_dart-0.0.8/
 path_provider=/home/develop/.pub-cache/hosted/pub.dev/path_provider-2.1.5/
 path_provider_android=/home/develop/.pub-cache/hosted/pub.dev/path_provider_android-2.2.15/
 path_provider_foundation=/home/develop/.pub-cache/hosted/pub.dev/path_provider_foundation-2.4.1/
 path_provider_linux=/home/develop/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1/
 path_provider_windows=/home/develop/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/
-permission_handler=/home/develop/.pub-cache/hosted/pub.dev/permission_handler-8.3.0/
+permission_handler=/home/develop/.pub-cache/hosted/pub.dev/permission_handler-10.4.5/
+permission_handler_android=/home/develop/.pub-cache/hosted/pub.dev/permission_handler_android-10.3.6/
+permission_handler_apple=/home/develop/.pub-cache/hosted/pub.dev/permission_handler_apple-9.1.4/
+permission_handler_windows=/home/develop/.pub-cache/hosted/pub.dev/permission_handler_windows-0.1.3/

@@ -1,14 +1,11 @@
 import 'dart:ui';
-
-import 'package:emoapp/model/journal_entry.dart';
+import 'package:emoapp/model/journal_entry_extended.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class JournalTextWidget extends StatefulWidget {
-  final JournalEntry journalEntry;
-
-  const JournalTextWidget({Key? key, required this.journalEntry})
+  const JournalTextWidget({required this.journalEntry, Key? key})
       : super(key: key);
+  final JournalEntryExtended journalEntry;
 
   @override
   State<StatefulWidget> createState() => _JournalTextWidget();

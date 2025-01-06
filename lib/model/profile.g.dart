@@ -1,44 +1,44 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'journal_entry.dart';
+part of 'profile.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class JournalEntryAdapter extends TypeAdapter<JournalEntry> {
+class ProfileAdapter extends TypeAdapter<Profile> {
   @override
-  final int typeId = 0;
+  final int typeId = 3;
 
   @override
-  JournalEntry read(BinaryReader reader) {
+  Profile read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return JournalEntry(
+    return Profile(
       id: fields[0] as String,
-      text: fields[1] as String,
-      timeStamp: fields[2] as DateTime,
-      emotionalLevel: fields[3] as int,
-      hashtags: (fields[4] as List).cast<String>(),
+      name: fields[1] as String,
+      imageKey: fields[2] as String,
+      description: fields[3] as String,
+      currentDiscussionId: fields[4] as String,
     );
   }
 
   @override
-  void write(BinaryWriter writer, JournalEntry obj) {
+  void write(BinaryWriter writer, Profile obj) {
     writer
       ..writeByte(5)
-      ..writeByte(0)
-      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.text)
+      ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.timeStamp)
+      ..write(obj.imageKey)
       ..writeByte(3)
-      ..write(obj.emotionalLevel)
+      ..write(obj.description)
       ..writeByte(4)
-      ..write(obj.hashtags);
+      ..write(obj.currentDiscussionId)
+      ..writeByte(0)
+      ..write(obj.id);
   }
 
   @override
@@ -47,7 +47,7 @@ class JournalEntryAdapter extends TypeAdapter<JournalEntry> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is JournalEntryAdapter &&
+      other is ProfileAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
