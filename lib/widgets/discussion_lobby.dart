@@ -1,6 +1,6 @@
-import 'package:emoapp/model/discussion.dart';
+import 'package:emoapp/model/discussion/discussion.dart';
 import 'package:emoapp/model/journal_colors.dart';
-import 'package:emoapp/services/entity_service.dart';
+import 'package:emoapp/services/sqf_entity_service.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:get_it/get_it.dart';
@@ -12,7 +12,7 @@ class DiscussionLobby extends StatefulWidget {
     super.key,
   });
 
-  final EntityService<Discussion, DiscussionAdapter> discussions;
+  final FlatFileEntityService<Discussion> discussions;
 
   @override
   State<StatefulWidget> createState() => _DiscussionLobby();
@@ -23,8 +23,7 @@ class _DiscussionLobby extends State<DiscussionLobby> {
 
   Future<void> _updateSelectedDiscussion(String id) async {
     //save to debug profile
-    final profiles =
-        GetIt.instance.get<EntityService<Profile, ProfileAdapter>>();
+    final profiles = GetIt.instance.get<FlatFileEntityService<Profile>>();
     final debugProfile = await profiles
         .where((m) => m.name == 'debug')
         .then((pps) => pps.firstOrNull);
@@ -35,7 +34,9 @@ class _DiscussionLobby extends State<DiscussionLobby> {
   }
 
   Future<List<Widget>> getChildren() async {
-    final d = await widget.discussions.getAll().then(
+    final d = await widget.discussions
+        .getAll()
+        .then(
           (discussions) => discussions.map(
             (d) => ListTile(
               leading: const Icon(
@@ -51,7 +52,8 @@ class _DiscussionLobby extends State<DiscussionLobby> {
               },
             ),
           ),
-        );
+        )
+        .then((l) => l.toList());
     return [
       DrawerHeader(
           decoration: const BoxDecoration(
@@ -72,18 +74,7 @@ class _DiscussionLobby extends State<DiscussionLobby> {
                       child: IconButton(
                         // key: UniqueKey(),
                         // heroTag: 'destroy all',
-                        onPressed: () async {
-                          await widget.discussions.create(
-                            Discussion(
-                                name: 'New',
-                                imageKey: '',
-                                description: '',
-                                id: const Uuid().v4(),
-                                children1: []),
-                            (Discussion d) => (true, null),
-                          );
-                          setState(() {});
-                        },
+                        onPressed: createDiscussion,
                         icon: const Icon(
                           Icons.add,
                           size: 48,
@@ -95,9 +86,7 @@ class _DiscussionLobby extends State<DiscussionLobby> {
                       child: IconButton(
                         // key: UniqueKey(),
                         // heroTag: 'destroy all',
-                        onPressed: () async {
-                          setState(() {});
-                        },
+                        onPressed: deleteDiscussion,
                         icon: const Icon(
                           Icons.delete_forever,
                           size: 48,
@@ -109,7 +98,24 @@ class _DiscussionLobby extends State<DiscussionLobby> {
               )
             ],
           )),
-    ].cast<Widget>().followedBy(d).toList();
+    ].cast<Widget>().followedBy(d).cast<Widget>().toList();
+  }
+
+  void deleteDiscussion() async {
+    setState(() {});
+  }
+
+  void createDiscussion() async {
+    await widget.discussions.create(
+      Discussion(
+          name: 'New',
+          imageKey: '',
+          description: '',
+          id: const Uuid().v4(),
+          children1: []),
+      (Discussion d) => (true, null),
+    );
+    setState(() {});
   }
 
   @override

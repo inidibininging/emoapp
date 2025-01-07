@@ -15,9 +15,9 @@ const int childrenListFieldId8 = ownerFieldTypeId + 8;
 const int childrenListFieldId9 = ownerFieldTypeId + 9;
 
 // models
-const int journalTypeId = 0;
-const int discussionTypeId = 1;
-const int discussionMessageTypeId = 2;
-const int profileTypeId = 3;
-const int calendarAttendeeTypeId = 4;
-const int calendarEventTypeId = 5;
+const int journalTypeId = 10;
+const int discussionTypeId = 11;
+const int discussionMessageTypeId = 12;
+const int profileTypeId = 13;
+const int calendarAttendeeTypeId = 14;
+const int calendarEventTypeId = 15;

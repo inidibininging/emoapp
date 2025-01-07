@@ -1,7 +1,6 @@
 import 'package:emoapp/model/entity_base.dart';
 import 'package:emoapp/model/entity_base_type.dart';
 import 'package:emoapp/model/entity_numbers.dart';
-import 'package:hive/hive.dart';
 
 /// An entity that holds a list of other entites
 /// Because of ... reasons.. I will retain the ids only
@@ -16,6 +15,5 @@ import 'package:hive/hive.dart';
 abstract class EntityBaseContainerSame extends EntityBase {
   EntityBaseContainerSame({required super.id, required this.children1});
 
-  @HiveField(childrenListFieldId1)
   List<EntityBase> children1;
 }

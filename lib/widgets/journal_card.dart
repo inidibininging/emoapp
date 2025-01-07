@@ -3,7 +3,6 @@ import 'package:emoapp/model/journal_entry_extended.dart';
 import 'package:emoapp/services/service_locator.dart';
 import 'package:emoapp/view_model/journal_entry_extended_view_model.dart';
 import 'package:emoapp/widgets/journal_edit_card.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

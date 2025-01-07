@@ -1,12 +1,10 @@
-import 'package:emoapp/model/discussion.dart';
+import 'package:emoapp/model/discussion/discussion.dart';
 import 'package:emoapp/model/journal_colors.dart';
 import 'package:emoapp/model/journal_entry_extended.dart';
 import 'package:emoapp/model/journal_type.dart';
-import 'package:emoapp/model/profile.dart';
-
-import 'package:emoapp/services/entity_service.dart';
 import 'package:emoapp/services/journal_entry_extended_service.dart';
 import 'package:emoapp/services/service_locator.dart';
+import 'package:emoapp/services/sqf_entity_service.dart';
 import 'package:emoapp/widgets/discussion_lobby.dart';
 import 'package:emoapp/widgets/journal_calendar.dart';
 import 'package:emoapp/widgets/journal_edit_card.dart';
@@ -107,8 +105,8 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(widget.title),
         ),
         drawer: DiscussionLobby(
-            discussions: GetIt.instance
-                .get<EntityService<Discussion, DiscussionAdapter>>()),
+            discussions:
+                GetIt.instance.get<FlatFileEntityService<Discussion>>()),
         body: Center(child: JournalList(GlobalKey())),
 
         bottomNavigationBar: Row(
@@ -133,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // padding: const EdgeInsets.all(8.0),
               child: IconButton(
                 onPressed: () async {
-                                    setState(() {});
+                  setState(() {});
                 },
                 icon: const Icon(
                   Icons.refresh,
@@ -147,7 +145,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () async {
                   final journalEntry = await GetIt.instance
                       .get<JournalEntryExtendedService>()
-                      .createLocally('', 5, [], JournalType.entry.index);
+                      .createLocally(JournalType.entry.name,
+                          ('Start writing your amazing thoughts here', 3));
                   await Navigator.of(context)
                       .push(
                     MaterialPageRoute(

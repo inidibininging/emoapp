@@ -96,17 +96,17 @@ class JournalEntryExtendedViewModel extends ChangeNotifier {
     }
   }
 
-  List<String> get hashtags => _model.hashtags;
-  set hashtags(List<String> value) {
-    _model.hashtags = value;
-    notifyListeners();
-  }
+  // List<String> get hashtags => _model.hashtags;
+  // set hashtags(List<String> value) {
+  //   _model.hashtags = value;
+  //   notifyListeners();
+  // }
 
   Future<void> save() async {
     _unchangedModel
       ..text = _model.text
       ..emotionalLevel = _model.emotionalLevel
-      ..hashtags = _model.hashtags
+      // ..hashtags = _model.hashtags
       ..timeStamp = _model.timeStamp
       ..type = _model.type
       ..discussionId = _model.discussionId;
@@ -118,11 +118,12 @@ class JournalEntryExtendedViewModel extends ChangeNotifier {
   }
 
   Future<void> refresh() async {
-    _model =
-        await GetIt.instance.get<JournalEntryExtendedService>().get(_model.id);
+    _model = (await GetIt.instance
+        .get<JournalEntryExtendedService>()
+        .getById(_model.id))!;
     _unchangedModel
       ..emotionalLevel = _model.emotionalLevel
-      ..hashtags = _model.hashtags
+      // ..hashtags = _model.hashtags
       ..text = _model.text
       ..timeStamp = _model.timeStamp
       ..type = _model.type
