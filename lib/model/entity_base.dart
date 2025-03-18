@@ -1,6 +1,4 @@
 import 'package:emoapp/model/json_serializable_interface.dart';
-import 'package:emoapp/services/sqf_entity_service.dart';
-import 'package:get_it/get_it.dart';
 
 ///represents the basic common inherited type for all flutter hive instances
 abstract class EntityBase<T> extends JsonSerializableInterface<T> {

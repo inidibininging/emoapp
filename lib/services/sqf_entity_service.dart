@@ -1,5 +1,4 @@
 import 'package:emoapp/model/entity_base.dart';
-import 'package:emoapp/model/json_serializable_interface.dart';
 import 'package:emoapp/services/sdb.dart';
 import 'package:emoapp/services/service_locator.dart';
 import 'package:get_it/get_it.dart';

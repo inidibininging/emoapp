@@ -1,6 +1,4 @@
-import 'package:emoapp/model/entity_numbers.dart';
 import 'package:emoapp/model/entity_base.dart';
-import 'package:emoapp/model/json_serializable_interface.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'profile.g.dart';

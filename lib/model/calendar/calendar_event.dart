@@ -1,7 +1,5 @@
 import 'package:emoapp/model/calendar/calendar_attendee.dart';
 import 'package:emoapp/model/entity_base.dart';
-import 'package:emoapp/model/entity_numbers.dart';
-import 'package:emoapp/model/json_serializable_interface.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'calendar_event.g.dart';

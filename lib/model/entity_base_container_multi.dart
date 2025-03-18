@@ -1,6 +1,5 @@
 import 'package:emoapp/model/entity_base.dart';
 import 'package:emoapp/model/entity_base_type.dart';
-import 'package:emoapp/model/entity_numbers.dart';
 
 /// An entity that holds a list of other entites
 /// Because of ... reasons.. I will retain the ids only
