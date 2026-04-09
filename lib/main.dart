@@ -1,12 +1,13 @@
 import 'package:emoapp/model/journal_colors.dart';
 import 'package:emoapp/services/service_locator.dart';
 import 'package:emoapp/widgets/dashboard.dart';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ServiceLocatorRegistrar().register();
+  
   runApp(const MyApp());
 }
 

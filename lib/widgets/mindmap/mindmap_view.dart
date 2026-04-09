@@ -40,12 +40,13 @@ class _MindmapViewState extends State<MindmapView> {
   }
 
   void _onScaleUpdate(ScaleUpdateDetails details, MindmapViewModel viewModel) {
-    // Update pan offset
+    // Update pan offset from drag delta
     viewModel.panOffset = viewModel.panOffset + details.focalPointDelta;
-    
-    // Update zoom
+
+    // Update zoom from pinch scale
     if (details.scale != 1.0) {
-      viewModel.zoomLevel = viewModel.zoomLevel * details.scale;
+      final newZoom = viewModel.zoomLevel * details.scale;
+      viewModel.zoomLevel = newZoom.clamp(0.1, 3.0);
     }
   }
 
@@ -60,8 +61,8 @@ class _MindmapViewState extends State<MindmapView> {
     for (final idea in viewModel.ideas) {
       final dx = idea.positionX - canvasX;
       final dy = idea.positionY - canvasY;
-      final distance = (dx * dx + dy * dy).sqrt();
-      
+      final distance = sqrt(dx * dx + dy * dy);
+
       if (distance <= 40) {
         tappedOnIdea = true;
         viewModel.selectIdea(idea);
@@ -89,6 +90,7 @@ class _MindmapViewState extends State<MindmapView> {
         onScaleUpdate: (details) => _onScaleUpdate(details, viewModel),
         onTapDown: (details) => _onTapDown(details, viewModel),
         onDoubleTap: () => _onDoubleTap(viewModel),
+        behavior: HitTestBehavior.translucent,
         child: Stack(
           children: [
             // Canvas background
@@ -99,45 +101,59 @@ class _MindmapViewState extends State<MindmapView> {
                   zoomLevel: viewModel.zoomLevel,
                   panOffset: viewModel.panOffset,
                 ),
-                child: GestureDetector(
-                  onLongPressStart: (details) {
-                    viewModel.deselectIdea();
-                    for (final idea in viewModel.ideas) {
-                      final localPosition =
-                          details.localPosition - viewModel.panOffset;
-                      final canvasX = localPosition.dx / viewModel.zoomLevel;
-                      final canvasY = localPosition.dy / viewModel.zoomLevel;
-                      
-                      final dx = idea.positionX - canvasX;
-                      final dy = idea.positionY - canvasY;
-                      final distance = (dx * dx + dy * dy).sqrt();
-                      
-                      if (distance <= 40) {
-                        viewModel.startMovingIdea(idea);
-                        break;
-                      }
-                    }
-                  },
-                  onLongPressMoveUpdate: (details) {
-                    if (viewModel.movingIdea != null) {
-                      final localPosition =
-                          details.localPosition - viewModel.panOffset;
-                      final canvasX = localPosition.dx / viewModel.zoomLevel;
-                      final canvasY = localPosition.dy / viewModel.zoomLevel;
-                      viewModel.updateMovingIdeaPosition(canvasX, canvasY);
-                    }
-                  },
-                  onLongPressEnd: (details) async {
-                    await viewModel.stopMovingIdea();
-                  },
-                  child: Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.identity()
-                      ..translate(viewModel.panOffset.dx, viewModel.panOffset.dy)
-                      ..scale(viewModel.zoomLevel),
-                    child: SizedBox(
-                      width: 10000,
-                      height: 10000,
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()
+                    ..translate(viewModel.panOffset.dx, viewModel.panOffset.dy)
+                    ..scale(viewModel.zoomLevel),
+                  child: SizedBox(
+                    width: 10000,
+                    height: 10000,
+                    child: GestureDetector(
+                      onLongPressStart: (details) {
+                        // Convert screen coordinates to canvas coordinates
+                        // We must undo the Transform that was applied to parent widgets
+                        final screenPos = details.globalPosition;
+                        final renderBox =
+                            context.findRenderObject() as RenderBox;
+                        final localPos = renderBox.globalToLocal(screenPos);
+
+                        final canvasX = (localPos.dx - viewModel.panOffset.dx) /
+                            viewModel.zoomLevel;
+                        final canvasY = (localPos.dy - viewModel.panOffset.dy) /
+                            viewModel.zoomLevel;
+
+                        viewModel.deselectIdea();
+                        for (final idea in viewModel.ideas) {
+                          final dx = idea.positionX - canvasX;
+                          final dy = idea.positionY - canvasY;
+                          final distance = sqrt(dx * dx + dy * dy);
+
+                          if (distance <= 45) {
+                            viewModel.startMovingIdea(idea);
+                            break;
+                          }
+                        }
+                      },
+                      onLongPressMoveUpdate: (details) {
+                        if (viewModel.movingIdea != null) {
+                          final screenPos = details.globalPosition;
+                          final renderBox =
+                              context.findRenderObject() as RenderBox;
+                          final localPos = renderBox.globalToLocal(screenPos);
+
+                          final canvasX =
+                              (localPos.dx - viewModel.panOffset.dx) /
+                                  viewModel.zoomLevel;
+                          final canvasY =
+                              (localPos.dy - viewModel.panOffset.dy) /
+                                  viewModel.zoomLevel;
+                          viewModel.updateMovingIdeaPosition(canvasX, canvasY);
+                        }
+                      },
+                      onLongPressEnd: (details) async {
+                        await viewModel.stopMovingIdea();
+                      },
                       child: Stack(
                         children: [
                           // Draw connection lines between ideas
@@ -158,8 +174,7 @@ class _MindmapViewState extends State<MindmapView> {
                                   idea: idea,
                                   isSelected:
                                       viewModel.selectedIdea?.id == idea.id,
-                                  isMoving:
-                                      viewModel.movingIdea?.id == idea.id,
+                                  isMoving: viewModel.movingIdea?.id == idea.id,
                                 ),
                               ),
                             );
@@ -308,30 +323,55 @@ class _IdeaConnectionsPainter extends CustomPainter {
 
     // Draw lines from each idea to its references
     for (final idea in ideas) {
-      for (final reference in idea.references) {
-        // Find the referenced idea
-        dynamic? referencedIdea;
-        try {
-          referencedIdea = ideas.firstWhere(
-            (i) => i.id == reference.ideaUuid,
-          );
-        } catch (e) {
-          continue;
-        }
+      try {
+        // Safely access references
+        final references = idea.references ?? [];
+        for (final reference in references) {
+          // Find the referenced idea
+          dynamic? referencedIdea;
+          try {
+            referencedIdea = ideas.firstWhere(
+              (i) => i.id == reference.ideaUuid,
+            );
+          } catch (e) {
+            continue;
+          }
 
-        if (referencedIdea != null) {
-          canvas.drawLine(
-            Offset(idea.positionX, idea.positionY),
-            Offset(referencedIdea.positionX, referencedIdea.positionY),
-            paint,
-          );
+          if (referencedIdea != null &&
+              referencedIdea.positionX != null &&
+              referencedIdea.positionY != null &&
+              idea.positionX != null &&
+              idea.positionY != null) {
+            canvas.drawLine(
+              Offset(idea.positionX, idea.positionY),
+              Offset(referencedIdea.positionX, referencedIdea.positionY),
+              paint,
+            );
+          }
         }
+      } catch (e) {
+        debugPrint('Error drawing connection for idea: $e');
+        continue;
       }
     }
   }
 
   @override
   bool shouldRepaint(_IdeaConnectionsPainter oldDelegate) {
-    return oldDelegate.ideas.length != ideas.length;
+    // Repaint if number of ideas changed
+    if (oldDelegate.ideas.length != ideas.length) {
+      return true;
+    }
+    // Repaint if any idea's position or references changed
+    for (int i = 0; i < ideas.length; i++) {
+      final oldIdea = oldDelegate.ideas[i];
+      final newIdea = ideas[i];
+      if (oldIdea.positionX != newIdea.positionX ||
+          oldIdea.positionY != newIdea.positionY ||
+          oldIdea.references.length != newIdea.references.length) {
+        return true;
+      }
+    }
+    return false;
   }
 }

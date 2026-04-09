@@ -1,5 +1,7 @@
 import 'package:emoapp/model/idea.dart';
+import 'package:emoapp/model/journal_entry_extended.dart';
 import 'package:emoapp/services/idea_service.dart';
+import 'package:emoapp/services/journal_entry_extended_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -7,26 +9,30 @@ import 'package:get_it/get_it.dart';
 class MindmapViewModel extends ChangeNotifier {
   MindmapViewModel() {
     _ideaService = GetIt.instance.get<IdeaService>();
+    _journalEntryService = GetIt.instance.get<JournalEntryExtendedService>();
     _suggestions = <Idea>[];
+    _journalEntrySuggestions = <JournalEntryExtended>[];
   }
 
   late final IdeaService _ideaService;
+  late final JournalEntryExtendedService _journalEntryService;
   late List<Idea> _suggestions;
-  
+  late List<JournalEntryExtended> _journalEntrySuggestions;
+
   // Zoom and pan state
   double _zoomLevel = 1.0;
   Offset _panOffset = Offset.zero;
-  
+
   // Selected idea and editing state
   Idea? _selectedIdea;
   bool _isEditingIdea = false;
-  
+
   // List of all ideas for the current user
   List<Idea> _ideas = [];
-  
+
   // Search filter
   String _searchQuery = '';
-  
+
   // Currently moving idea
   Idea? _movingIdea;
 
@@ -44,7 +50,10 @@ class MindmapViewModel extends ChangeNotifier {
             idea.content.toLowerCase().contains(_searchQuery.toLowerCase()))
         .toList();
   }
+
   List<Idea> get suggestions => _suggestions;
+  List<JournalEntryExtended> get journalEntrySuggestions =>
+      _journalEntrySuggestions;
   Idea? get movingIdea => _movingIdea;
 
   // Setters with notifyListeners()
@@ -117,7 +126,7 @@ class MindmapViewModel extends ChangeNotifier {
       );
       idea.ownerUuid = ownerUuid;
       idea.groupUuid = groupUuid;
-      
+
       await _ideaService.save(idea);
       _ideas.add(idea);
       notifyListeners();
@@ -207,9 +216,8 @@ class MindmapViewModel extends ChangeNotifier {
   Future<void> getReferenceSuggestions({String? query}) async {
     try {
       if (query == null || query.isEmpty) {
-        _suggestions = _ideas
-            .where((idea) => idea.id != _selectedIdea?.id)
-            .toList();
+        _suggestions =
+            _ideas.where((idea) => idea.id != _selectedIdea?.id).toList();
       } else {
         _suggestions = _ideas
             .where((idea) =>
@@ -221,6 +229,25 @@ class MindmapViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('Error getting reference suggestions: $e');
+    }
+  }
+
+  // Get suggestions for journal entry references
+  Future<void> getJournalEntrySuggestions({String? query}) async {
+    try {
+      final allEntries = await _journalEntryService.getAll();
+      if (query == null || query.isEmpty) {
+        _journalEntrySuggestions = allEntries.toList();
+      } else {
+        _journalEntrySuggestions = allEntries
+            .where((entry) =>
+                entry.title.toLowerCase().contains(query.toLowerCase()) ||
+                entry.text.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error getting journal entry suggestions: $e');
     }
   }
 

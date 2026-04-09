@@ -96,6 +96,21 @@ class Idea extends EntityBase<Idea> {
       id: EntityBase.generateId(),
       text: text,
       ideaUuid: ideaUuid,
+      referenceType: ReferenceType.idea,
+    );
+    references.add(reference);
+  }
+
+  /// Adds a reference to a journal entry
+  void addJournalEntryReference({
+    required String text,
+    required String journalEntryUuid,
+  }) {
+    final reference = Reference(
+      id: EntityBase.generateId(),
+      text: text,
+      journalEntryUuid: journalEntryUuid,
+      referenceType: ReferenceType.journalEntry,
     );
     references.add(reference);
   }

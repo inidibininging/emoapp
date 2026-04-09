@@ -79,18 +79,23 @@ class _MindmapScreenState extends State<MindmapScreen> {
                     },
                   ),
                   // Edit dialog if in editing mode
-                  if (viewModel.isEditingIdea &&
-                      viewModel.selectedIdea != null)
+                  if (viewModel.isEditingIdea && viewModel.selectedIdea != null)
                     GestureDetector(
-                      onTap: () => viewModel.stopEditing(),
+                      onTap: () {
+                        viewModel.stopEditing();
+                        viewModel.deselectIdea();
+                      },
                       child: Container(
                         color: Colors.black.withOpacity(0.3),
                         child: Center(
                           child: GestureDetector(
                             onTap: () {},
-                            child: EditIdeaDialog(
-                              idea: viewModel.selectedIdea!,
-                              currentUserUuid: widget.currentUserUuid,
+                            child: RepaintBoundary(
+                              child: EditIdeaDialog(
+                                key: ValueKey(viewModel.selectedIdea!.id),
+                                idea: viewModel.selectedIdea!,
+                                currentUserUuid: widget.currentUserUuid,
+                              ),
                             ),
                           ),
                         ),
@@ -113,65 +118,111 @@ class _MindmapScreenState extends State<MindmapScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Create New Idea'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
+      builder: (context) => Dialog(
+        insetPadding: EdgeInsets.zero,
+        child: Column(
           children: [
-            TextField(
-              controller: titleController,
-              decoration: InputDecoration(
-                hintText: 'Idea title',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            // Header with buttons
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: Colors.grey[300]!),
                 ),
+              ),
+              child: Row(
+                children: [
+                  const Text(
+                    'Create New Idea',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final idea = await viewModel.createIdea(
+                        title: titleController.text.isEmpty
+                            ? 'Untitled Idea'
+                            : titleController.text,
+                        content: contentController.text,
+                        positionX: x ?? 0,
+                        positionY: y ?? 0,
+                        ownerUuid: widget.currentUserUuid ?? '',
+                      );
+
+                      titleController.dispose();
+                      contentController.dispose();
+
+                      Navigator.pop(context);
+
+                      // Show edit dialog for the new idea
+                      // if (idea != null && mounted) {
+                      //   await Future.delayed(const Duration(milliseconds: 300));
+                      //   viewModel.selectIdea(idea);
+                      //   viewModel.startEditing();
+                      // }
+                    },
+                    child: const Text('Create'),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: contentController,
-              decoration: InputDecoration(
-                hintText: 'Idea description',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            // Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Title',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: titleController,
+                      decoration: InputDecoration(
+                        hintText: 'Idea title',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Description',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: contentController,
+                      decoration: InputDecoration(
+                        hintText: 'Idea description',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      maxLines: 8,
+                    ),
+                  ],
                 ),
               ),
-              maxLines: 3,
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final idea = await viewModel.createIdea(
-                title: titleController.text.isEmpty
-                    ? 'Untitled Idea'
-                    : titleController.text,
-                content: contentController.text,
-                positionX: x ?? 0,
-                positionY: y ?? 0,
-                ownerUuid: widget.currentUserUuid ?? '',
-              );
-
-              titleController.dispose();
-              contentController.dispose();
-
-              Navigator.pop(context);
-
-              // Show edit dialog for the new idea
-              if (idea != null && mounted) {
-                await Future.delayed(const Duration(milliseconds: 300));
-                viewModel.selectIdea(idea);
-                viewModel.startEditing();
-              }
-            },
-            child: const Text('Create'),
-          ),
-        ],
       ),
     );
   }

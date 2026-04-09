@@ -400,7 +400,7 @@ class _JournalCalendar extends State<JournalCalendar> {
         DayCreatorService.getDays(dateForJournal.month, dateForJournal.year);
 
     return GridView(
-      physics: const NeverScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       shrinkWrap: true,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: daysPerRow,

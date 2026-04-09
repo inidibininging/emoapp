@@ -11,7 +11,9 @@ Idea _$IdeaFromJson(Map<String, dynamic> json) => Idea(
       title: json['title'] as String,
       content: json['content'] as String,
       references: (json['references'] as List<dynamic>?)
-              ?.map((e) => Reference.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => e is Reference
+                  ? e
+                  : Reference.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
       ownerUuid: json['ownerUuid'] as String? ?? '',
