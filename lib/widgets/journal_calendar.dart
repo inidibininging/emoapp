@@ -395,7 +395,7 @@ class _JournalCalendar extends State<JournalCalendar> {
     if (daysPerRow < 1) {
       throw 'daysPerRow < 1';
     }
-    final dateForJournal = DateTime.now();
+    final dateForJournal = DateTime(DateTime.now().year, viewModel.currentMonth, 1);
     final daysInMonth =
         DayCreatorService.getDays(dateForJournal.month, dateForJournal.year);
 
@@ -408,11 +408,11 @@ class _JournalCalendar extends State<JournalCalendar> {
       ),
       children: DayCreatorService.daysArray(
         daysInMonth,
-        dateForJournal.month,
+        viewModel.currentMonth,
         dateForJournal.year,
       ).map((d) {
         final currentDate = DateFormat('dd.MM.yyyy').parse(
-          "${d.toString().padLeft(2, '0')}.${dateForJournal.month.toString().padLeft(2, '0')}.${dateForJournal.year}",
+          "${d.toString().padLeft(2, '0')}.${viewModel.currentMonth.toString().padLeft(2, '0')}.${dateForJournal.year}",
         );
 
         return FutureBuilder<Iterable<JournalEntryExtended>?>(
