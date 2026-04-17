@@ -20,16 +20,27 @@ class MindmapScreen extends StatefulWidget {
 
 class _MindmapScreenState extends State<MindmapScreen> {
   bool _showListView = false;
+  late TextEditingController titleController;
+  late TextEditingController contentController;
 
   @override
   void initState() {
     super.initState();
+    titleController = TextEditingController();
+    contentController = TextEditingController();
     // Load ideas when screen initializes
     Future.microtask(() {
       context.read<MindmapViewModel>().loadIdeas(
             ownerUuid: widget.currentUserUuid,
           );
     });
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    contentController.dispose();
+    super.dispose();
   }
 
   @override
@@ -59,7 +70,8 @@ class _MindmapScreenState extends State<MindmapScreen> {
             ? FloatingActionButton.extended(
                 onPressed: () {
                   // Show dialog to create new idea at center
-                  _showCreateIdeaDialog(context, viewModel);
+                  _showCreateIdeaDialog(context, viewModel,
+                      quadrantCenter: viewModel.lastQuadrantCenter);
                 },
                 icon: const Icon(Icons.add),
                 label: const Text('New Idea'),
@@ -74,8 +86,9 @@ class _MindmapScreenState extends State<MindmapScreen> {
                   // Mindmap view
                   MindmapView(
                     ownerUuid: widget.currentUserUuid ?? '',
-                    onCreateIdea: (x, y) async {
-                      _showCreateIdeaDialog(context, viewModel, x, y);
+                    onCreateIdea: (x, y, quadrantCenter) async {
+                      _showCreateIdeaDialog(context, viewModel,
+                          x: x, y: y, quadrantCenter: quadrantCenter);
                     },
                   ),
                   // Edit dialog if in editing mode
@@ -109,13 +122,11 @@ class _MindmapScreenState extends State<MindmapScreen> {
 
   void _showCreateIdeaDialog(
     BuildContext context,
-    MindmapViewModel viewModel, [
+    MindmapViewModel viewModel, {
     double? x,
     double? y,
-  ]) {
-    final titleController = TextEditingController();
-    final contentController = TextEditingController();
-
+    Offset? quadrantCenter,
+  }) {
     showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -155,10 +166,12 @@ class _MindmapScreenState extends State<MindmapScreen> {
                         positionX: x ?? 0,
                         positionY: y ?? 0,
                         ownerUuid: widget.currentUserUuid ?? '',
+                        currentQuadrantCenter: quadrantCenter,
                       );
 
-                      titleController.dispose();
-                      contentController.dispose();
+                      // Clear controllers for next use
+                      titleController.clear();
+                      contentController.clear();
 
                       Navigator.pop(context);
 

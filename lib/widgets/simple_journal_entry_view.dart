@@ -145,110 +145,113 @@ class _SimpleJournalEntryViewState extends State<SimpleJournalEntryView> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Date display
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Date: ${DateFormat('EEEE, MMMM d, yyyy').format(widget.selectedDate)}',
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Date display
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Date: ${DateFormat('EEEE, MMMM d, yyyy').format(widget.selectedDate)}',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
-          ),
 
-          // Topic selector
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Topic (Optional)',
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 8),
-                DropdownButton<String>(
-                  isExpanded: true,
-                  value: _selectedTopicId.isEmpty ? null : _selectedTopicId,
-                  hint: const Text('Select a topic'),
-                  items: _availableTopics.map((topic) {
-                    return DropdownMenuItem<String>(
-                      value: topic.id,
-                      child: Text(topic.title),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        _selectedTopicId = value;
-                      });
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          const Divider(),
-
-          // Emotion selector
-          Expanded(
-            child: EmotionSelector(
-              onEmotionsSelected: _updateSelectedEmotions,
-              initialEmotionIds: _selectedEmotionIds,
-            ),
-          ),
-
-          const Divider(),
-
-          // Message input
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'What\'s on your mind?',
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _messageController,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    hintText: 'Enter your message...',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.all(12),
+            // Topic selector
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Topic (Optional)',
+                    style: TextStyle(fontWeight: FontWeight.w500),
                   ),
-                ),
-                // const SizedBox(height: 16),
-                // SizedBox(
-                //   width: double.infinity,
-                //   child: ElevatedButton.icon(
-                //     onPressed: _createEntry,
-                //     icon: const Icon(Icons.check),
-                //     label: const Padding(
-                //       padding: EdgeInsets.symmetric(vertical: 12.0),
-                //       child: Text('Save Entry'),
-                //     ),
-                //     style: ElevatedButton.styleFrom(
-                //       backgroundColor: JournalColors.entry.value,
-                //       shape: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.circular(8),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-              ],
+                  const SizedBox(height: 8),
+                  DropdownButton<String>(
+                    isExpanded: true,
+                    value: _selectedTopicId.isEmpty ? null : _selectedTopicId,
+                    hint: const Text('Select a topic'),
+                    items: _availableTopics.map((topic) {
+                      return DropdownMenuItem<String>(
+                        value: topic.id,
+                        child: Text(topic.title),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedTopicId = value;
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+
+            const Divider(),
+
+            // Emotion selector
+            SizedBox(
+              height: 200,
+              child: EmotionSelector(
+                onEmotionsSelected: _updateSelectedEmotions,
+                initialEmotionIds: _selectedEmotionIds,
+              ),
+            ),
+
+            const Divider(),
+
+            // Message input
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'What\'s on your mind?',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _messageController,
+                    maxLines: 4,
+                    decoration: InputDecoration(
+                      hintText: 'Enter your message...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      contentPadding: const EdgeInsets.all(12),
+                    ),
+                  ),
+                  // const SizedBox(height: 16),
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   child: ElevatedButton.icon(
+                  //     onPressed: _createEntry,
+                  //     icon: const Icon(Icons.check),
+                  //     label: const Padding(
+                  //       padding: EdgeInsets.symmetric(vertical: 12.0),
+                  //       child: Text('Save Entry'),
+                  //     ),
+                  //     style: ElevatedButton.styleFrom(
+                  //       backgroundColor: JournalColors.entry.value,
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

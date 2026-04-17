@@ -104,4 +104,8 @@ class TopicDetailViewModel extends ChangeNotifier {
     filtered.sort((a, b) => b.timeStamp.compareTo(a.timeStamp));
     return filtered;
   }
+
+  Future<void> deleteJournalEntry(String entryId) async {
+    await GetIt.instance.get<JournalEntryExtendedService>().destroy(entryId);
+  }
 }

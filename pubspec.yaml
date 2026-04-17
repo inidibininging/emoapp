@@ -35,6 +35,7 @@ dependencies:
   hashtagable: ^2.0.2+1
   path_provider: ^2.0.2
   permission_handler: ^12.0.1
+  file_picker: ^11.0.2
   intl: ^0.20.2
   chart_sparkline: ^1.0.5
   auto_size_text: ^3.0.0
@@ -46,6 +47,9 @@ dependencies:
   
 
   json_annotation: any
+  ollama_dart: ^2.0.1
+  shared_preferences: ^2.2.0
+  local_auth: ^2.1.8
 dev_dependencies:
   flutter_test:
     sdk: flutter

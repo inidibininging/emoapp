@@ -22,6 +22,7 @@ class _TopicDetailViewState extends State<TopicDetailView> {
   late TextEditingController _descriptionController;
   final TextEditingController _tagController = TextEditingController();
   final TextEditingController _todoController = TextEditingController();
+  int _refreshCounter = 0;
 
   @override
   void initState() {
@@ -316,6 +317,7 @@ class _TopicDetailViewState extends State<TopicDetailView> {
                                       ),
                                     )
                                         .then((_) {
+                                      _refreshCounter++;
                                       setState(() {});
                                     });
                                   }
@@ -327,6 +329,7 @@ class _TopicDetailViewState extends State<TopicDetailView> {
                           ),
                           const SizedBox(height: 8),
                           FutureBuilder<List<JournalEntryExtended>>(
+                            key: ValueKey(_refreshCounter),
                             future: viewModel.getAssociatedEntries(),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {
@@ -348,8 +351,37 @@ class _TopicDetailViewState extends State<TopicDetailView> {
                                 itemCount: entries.length,
                                 itemBuilder: (context, index) {
                                   final entry = entries[index];
-                                  return JournalCard(
-                                    journalEntry: entry,
+                                  return Dismissible(
+                                    key: Key(entry.id),
+                                    direction: DismissDirection.endToStart,
+                                    background: Container(
+                                      color: Colors.red,
+                                      alignment: Alignment.centerRight,
+                                      padding: const EdgeInsets.only(right: 20),
+                                      child: const Icon(
+                                        Icons.delete,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    onDismissed: (direction) async {
+                                      await viewModel
+                                          .deleteJournalEntry(entry.id);
+                                      entries.removeAt(index);
+                                      setState(() {});
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content:
+                                                Text('Journal entry deleted'),
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: JournalCard(
+                                      journalEntry: entry,
+                                    ),
                                   );
                                   // return Card(
                                   //   child: ListTile(

@@ -1,13 +1,18 @@
 import 'package:emoapp/model/journal_colors.dart';
 import 'package:emoapp/services/service_locator.dart';
+import 'package:emoapp/services/pin_authentication_service.dart';
 import 'package:emoapp/widgets/dashboard.dart';
+import 'package:emoapp/widgets/auth/pin_login_screen.dart';
+import 'package:emoapp/widgets/auth/pin_setup_screen.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ServiceLocatorRegistrar().register();
-  
+
   runApp(const MyApp());
 }
 
@@ -90,6 +95,80 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late PinAuthenticationService _pinService;
+  bool _isAuthenticated = false;
+  bool _isPinSet = false;
+  bool _isLoading = true;
+
   @override
-  Widget build(BuildContext context) => const Dashboard();
+  void initState() {
+    super.initState();
+    _initializeAuth();
+  }
+
+  Future<void> _initializeAuth() async {
+    _pinService = GetIt.instance.get<PinAuthenticationService>();
+
+    // Skip PIN authentication on web platform
+    if (kIsWeb) {
+      setState(() {
+        _isAuthenticated = true;
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final isPinSet = await _pinService.isPinSet();
+    setState(() {
+      _isPinSet = isPinSet;
+      _isLoading = false;
+      // If no PIN is set, we'll show the setup screen
+      // If PIN is set, we'll show the login screen
+      if (!isPinSet) {
+        _isAuthenticated = false;
+      }
+    });
+  }
+
+  void _onSetupComplete() {
+    setState(() {
+      _isPinSet = true;
+      _isAuthenticated = true;
+    });
+  }
+
+  void _onLoginSuccess() {
+    setState(() {
+      _isAuthenticated = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    // Skip authentication on web platform
+    if (kIsWeb) {
+      return const Dashboard();
+    }
+
+    // Show PIN setup if no PIN is set
+    if (!_isPinSet) {
+      return PinSetupScreen(onSetupComplete: _onSetupComplete);
+    }
+
+    // Show PIN login if not authenticated
+    if (!_isAuthenticated) {
+      return PinLoginScreen(onLoginSuccess: _onLoginSuccess);
+    }
+
+    // Show dashboard if authenticated
+    return const Dashboard();
+  }
 }

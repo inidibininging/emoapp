@@ -36,6 +36,9 @@ class MindmapViewModel extends ChangeNotifier {
   // Currently moving idea
   Idea? _movingIdea;
 
+  // Quadrant tracking
+  Offset? _lastQuadrantCenter;
+
   // Getters
   double get zoomLevel => _zoomLevel;
   Offset get panOffset => _panOffset;
@@ -55,6 +58,7 @@ class MindmapViewModel extends ChangeNotifier {
   List<JournalEntryExtended> get journalEntrySuggestions =>
       _journalEntrySuggestions;
   Idea? get movingIdea => _movingIdea;
+  Offset? get lastQuadrantCenter => _lastQuadrantCenter;
 
   // Setters with notifyListeners()
   set zoomLevel(double value) {
@@ -108,6 +112,12 @@ class MindmapViewModel extends ChangeNotifier {
     panOffset = Offset.zero;
   }
 
+  // Update current quadrant center
+  void updateQuadrantCenter(Offset newCenter) {
+    _lastQuadrantCenter = newCenter;
+    notifyListeners();
+  }
+
   // Create a new idea
   Future<Idea?> createIdea({
     required String title,
@@ -116,13 +126,25 @@ class MindmapViewModel extends ChangeNotifier {
     required double positionY,
     String ownerUuid = '',
     String groupUuid = '',
+    Offset? currentQuadrantCenter,
   }) async {
     try {
+      var finalX = positionX;
+      var finalY = positionY;
+
+      // If we have a quadrant center and a last quadrant center, apply offset
+      if (currentQuadrantCenter != null && _lastQuadrantCenter != null) {
+        final offsetX = currentQuadrantCenter.dx - _lastQuadrantCenter!.dx;
+        final offsetY = currentQuadrantCenter.dy - _lastQuadrantCenter!.dy;
+        finalX = positionX + offsetX;
+        finalY = positionY + offsetY;
+      }
+
       final idea = Idea.create(
         title: title,
         content: content,
-        positionX: positionX,
-        positionY: positionY,
+        positionX: finalX,
+        positionY: finalY,
       );
       idea.ownerUuid = ownerUuid;
       idea.groupUuid = groupUuid;

@@ -6,6 +6,7 @@ import 'package:emoapp/services/calendar/day_creator_service.dart';
 import 'package:emoapp/services/flat_file_service.dart';
 import 'package:emoapp/view_model/journal_entry_extended_view_model.dart';
 import 'package:emoapp/widgets/emotion_check_in_view.dart';
+import 'package:emoapp/widgets/combined_date_time_picker_dialog.dart';
 // import 'package:emojis_null_safe/emojis.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -162,37 +163,39 @@ class _JournalEditCard extends State<JournalEditCard> {
                             text: viewModel.timeStamp,
                             recognizer: TapGestureRecognizer()
                               ..onTap = () async {
-                                if (viewModel.type !=
-                                    JournalType.entry.stringRepresentation) {
-                                  var validDate =
-                                      viewModel.timeStampAsDateTime();
-                                  // try {
-                                  //   validDate =
-                                  //       DateFormat().parse(viewModel);
-                                  // } catch (ex) {}
-                                  final days = DayCreatorService.getDays(
-                                    validDate.month,
-                                    validDate.year,
-                                  );
+                                var validDate = viewModel.timeStampAsDateTime();
 
-                                  final startDate =
-                                      DateFormat('dd.MM.yyyy').parse(
-                                    '01.${validDate.month.toString().padLeft(2, '0')}.${validDate.year}',
-                                  );
+                                // Calculate date range for the picker
+                                final days = DayCreatorService.getDays(
+                                  validDate.month,
+                                  validDate.year,
+                                );
 
-                                  final endDate =
-                                      DateFormat('dd.MM.yyyy').parse(
-                                    '${days.toString().padLeft(2, '0')}.${validDate.month.toString().padLeft(2, '0')}.${validDate.year}',
-                                  );
+                                final startDate =
+                                    DateFormat('dd.MM.yyyy').parse(
+                                  '01.${validDate.month.toString().padLeft(2, '0')}.${validDate.year}',
+                                );
 
-                                  final nextDate = await showDatePicker(
+                                final endDate = DateFormat('dd.MM.yyyy').parse(
+                                  '${days.toString().padLeft(2, '0')}.${validDate.month.toString().padLeft(2, '0')}.${validDate.year}',
+                                );
+
+                                // Show combined date and time picker
+                                if (context.mounted) {
+                                  final finalDateTime =
+                                      await showDialog<DateTime>(
                                     context: context,
-                                    initialDate: validDate,
-                                    firstDate: startDate,
-                                    lastDate: endDate,
+                                    builder: (context) =>
+                                        CombinedDateTimePickerDialog(
+                                      initialDateTime: validDate,
+                                      startDate: startDate,
+                                      endDate: endDate,
+                                    ),
                                   );
-                                  if (nextDate != null) {
-                                    viewModel.setTimeStamp(nextDate);
+
+                                  if (finalDateTime != null &&
+                                      context.mounted) {
+                                    viewModel.setTimeStamp(finalDateTime);
                                     await viewModel.save();
                                   }
                                 }

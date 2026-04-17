@@ -198,125 +198,39 @@ class _JournalCalendar extends State<JournalCalendar> {
   Widget calendarDayTypeIndicator(
     final DateTime currentDate,
     Iterable<JournalEntryExtended> entries,
-    JournalType journalType,
+    Iterable<JournalType> journalType,
   ) {
     const txtStyle = const TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
-    switch (journalType) {
-      case JournalType.entry:
-        final filteredEntries = entries
-            .where(
-              (j) =>
-                  j.type == JournalType.entry.index &&
-                  j.timeStamp.day == currentDate.day &&
-                  j.timeStamp.month == currentDate.month &&
-                  j.timeStamp.year == currentDate.year,
-            )
-            .toList();
-        if (filteredEntries.isNotEmpty) {
-          return DecoratedBox(
-            decoration: const BoxDecoration(
-              color: entryColor,
-            ),
-            child: Wrap(
-              // clipBehavior: Clip.hardEdge,
-              children: filteredEntries
-                  .map((entry) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: Chip(
-                          backgroundColor: JournalColors.entry.value,
-                          label: Text(
-                            _getTitleOrEmotions(entry),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: txtStyle,
-                          ),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                      ))
-                  .toList(),
-            ),
-          );
-        }
-        break;
-      case JournalType.perspective:
-        final filteredEntries = entries
-            .where(
-              (j) =>
-                  j.type == JournalType.perspective.index &&
-                  j.timeStamp.day == currentDate.day &&
-                  j.timeStamp.month == currentDate.month &&
-                  j.timeStamp.year == currentDate.year,
-            )
-            .toList();
-        if (filteredEntries.isNotEmpty) {
-          return DecoratedBox(
-            decoration: const BoxDecoration(
-              color: perspectiveColor,
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: filteredEntries
-                    .map((entry) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: Chip(
-                            backgroundColor: JournalColors.perspective.value,
-                            label: Text(
-                              _getTitleOrEmotions(entry),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: txtStyle,
-                            ),
-                            visualDensity: VisualDensity.compact,
-                          ),
-                        ))
-                    .toList(),
-              ),
-            ),
-          );
-        }
-        break;
-      case JournalType.retrospective:
-        final filteredEntries = entries
-            .where(
-              (j) =>
-                  j.type == JournalType.retrospective.index &&
-                  j.timeStamp.day == currentDate.day &&
-                  j.timeStamp.month == currentDate.month &&
-                  j.timeStamp.year == currentDate.year,
-            )
-            .toList();
-        if (filteredEntries.isNotEmpty) {
-          return DecoratedBox(
-            decoration: const BoxDecoration(
-              color: retrospectiveColor,
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: filteredEntries
-                    .map((entry) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                          child: Chip(
-                            backgroundColor: JournalColors.retrospective.value,
-                            label: Text(
-                              _getTitleOrEmotions(entry),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: txtStyle,
-                            ),
-                            visualDensity: VisualDensity.compact,
-                          ),
-                        ))
-                    .toList(),
-              ),
-            ),
-          );
-        }
-        break;
-      default:
+    final entriesCount = entries
+        .where((e) =>
+            e.timeStamp.day == currentDate.day &&
+            e.timeStamp.month == currentDate.month &&
+            e.timeStamp.year == currentDate.year &&
+            journalType.map((je) => je.value).contains(e.type))
+        .length;
+
+    if (entriesCount == 0) {
+      return Container();
     }
-    return Container();
+
+    return DecoratedBox(
+        decoration: const BoxDecoration(
+          color: entryColor,
+        ),
+        child: Wrap(
+            // clipBehavior: Clip.hardEdge,
+            children: [
+              Chip(
+                backgroundColor: JournalColors.retrospective.value,
+                label: Text(
+                  entriesCount.toString(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: txtStyle,
+                ),
+                visualDensity: VisualDensity.compact,
+              )
+            ]));
   }
 
   List<Color> calendarDayColorOnEmoLevels(
@@ -395,7 +309,8 @@ class _JournalCalendar extends State<JournalCalendar> {
     if (daysPerRow < 1) {
       throw 'daysPerRow < 1';
     }
-    final dateForJournal = DateTime(DateTime.now().year, viewModel.currentMonth, 1);
+    final dateForJournal =
+        DateTime(DateTime.now().year, viewModel.currentMonth, 1);
     final daysInMonth =
         DayCreatorService.getDays(dateForJournal.month, dateForJournal.year);
 
@@ -444,25 +359,26 @@ class _JournalCalendar extends State<JournalCalendar> {
                         ),
                         Expanded(
                           child: calendarDayTypeIndicator(
-                            currentDate,
-                            snapshot.data ?? [],
+                              currentDate, snapshot.data ?? [], const [
                             JournalType.entry,
-                          ),
-                        ),
-                        Expanded(
-                          child: calendarDayTypeIndicator(
-                            currentDate,
-                            snapshot.data ?? [],
                             JournalType.perspective,
-                          ),
-                        ),
-                        Expanded(
-                          child: calendarDayTypeIndicator(
-                            currentDate,
-                            snapshot.data ?? [],
                             JournalType.retrospective,
-                          ),
+                          ]),
                         ),
+                        // Expanded(
+                        //   child: calendarDayTypeIndicator(
+                        //     currentDate,
+                        //     snapshot.data ?? [],
+                        //     JournalType.perspective,
+                        //   ),
+                        // ),
+                        // Expanded(
+                        //   child: calendarDayTypeIndicator(
+                        //     currentDate,
+                        //     snapshot.data ?? [],
+                        //     JournalType.retrospective,
+                        //   ),
+                        // ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(1, 8, 1, 5),
                           child: Container(),

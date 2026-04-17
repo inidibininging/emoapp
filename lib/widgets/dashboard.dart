@@ -3,6 +3,8 @@ import 'package:emoapp/view_model/mindmap_view_model.dart';
 import 'package:emoapp/widgets/topic_list_view.dart';
 import 'package:emoapp/widgets/journal_calendar.dart';
 import 'package:emoapp/widgets/mindmap/mindmap_screen.dart';
+import 'package:emoapp/widgets/settings_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -69,20 +71,33 @@ class _DashboardState extends State<Dashboard> {
                 });
               },
             ),
+            if (!kIsWeb)
+              ListTile(
+                title: const Text('Settings'),
+                leading: const Icon(Icons.settings),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() {
+                    _selectedIndex = 3;
+                  });
+                },
+              ),
           ],
         ),
       ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: [
-          TopicListView(),
-          JournalCalendar(),
-          ChangeNotifierProvider(
-            create: (_) => MindmapViewModel(),
-            child: const MindmapScreen(),
-          ),
-        ],
-      ),
+      body: _selectedIndex == 3 && !kIsWeb
+          ? const SettingsScreen()
+          : IndexedStack(
+              index: _selectedIndex,
+              children: [
+                TopicListView(),
+                JournalCalendar(),
+                ChangeNotifierProvider(
+                  create: (_) => MindmapViewModel(),
+                  child: const MindmapScreen(),
+                ),
+              ],
+            ),
     );
   }
 }

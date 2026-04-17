@@ -15,6 +15,7 @@ import 'package:emoapp/services/sdb.dart';
 import 'package:emoapp/services/flat_file_service.dart';
 import 'package:emoapp/services/emotion_service.dart';
 import 'package:emoapp/services/idea_service.dart';
+import 'package:emoapp/services/pin_authentication_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -58,6 +59,9 @@ class ServiceLocatorRegistrar {
     //   JournalEntryExtendedService(),
     // );
 
+    // Register PIN authentication service
+    await registerPinAuthentication();
+
     await registerProfile();
     await registerJournalEntryExtended();
     await registerDiscussion();
@@ -65,6 +69,12 @@ class ServiceLocatorRegistrar {
     await registerEmotion();
     await registerIdea();
     await registerVisibilityGroup();
+  }
+
+  Future<void> registerPinAuthentication() async {
+    final pinService = PinAuthenticationService();
+    await pinService.init();
+    GetIt.instance.registerSingleton<PinAuthenticationService>(pinService);
   }
 
   /// used for registering entity instantiation with or without parameters
@@ -348,7 +358,8 @@ class ServiceLocatorRegistrar {
             ? (true, null)
             : (false, Exception('visibility group name is not there'));
 
-    registerEntityInvocatorWithParams<VisibilityGroup, (String name, String description)>(
+    registerEntityInvocatorWithParams<VisibilityGroup,
+        (String name, String description)>(
       ((String name, String description) params) => VisibilityGroup(
         id: const Uuid().v4(),
         name: params.$1,
@@ -357,8 +368,8 @@ class ServiceLocatorRegistrar {
       'visibility-group-box',
     );
 
-    final visibilityGroup =
-        GetIt.instance.registerSingleton<FlatFileEntityService<VisibilityGroup>>(
+    final visibilityGroup = GetIt.instance
+        .registerSingleton<FlatFileEntityService<VisibilityGroup>>(
       FlatFileEntityService<VisibilityGroup>(
           visibilityGroupValidation, Sdb<VisibilityGroup>()),
     );
@@ -387,7 +398,8 @@ class ServiceLocatorRegistrar {
 
     registerEntityInvocatorWithParams<Idea,
         (String title, String content, double x, double y)>(
-      ((String title, String content, double x, double y) params) => Idea.create(
+      ((String title, String content, double x, double y) params) =>
+          Idea.create(
         title: params.$1,
         content: params.$2,
         positionX: params.$3,
@@ -405,4 +417,3 @@ class ServiceLocatorRegistrar {
         instanceName: "${Idea}Json");
   }
 }
-
