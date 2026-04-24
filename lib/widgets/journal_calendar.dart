@@ -509,7 +509,9 @@ class _JournalCalendar extends State<JournalCalendar> {
                                         horizontal: 4.0,
                                       ),
                                       child: FilterChip(
-                                        label: Text(topic.title),
+                                        label: Text(topic.sensitiveTopic
+                                            ? '(Sensitive)'
+                                            : topic.title),
                                         selected: viewModel.selectedTopicIds
                                             .contains(topic.id),
                                         onSelected: (selected) {

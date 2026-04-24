@@ -29,6 +29,7 @@ class _JournalEditCard extends State<JournalEditCard> {
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _tagController = TextEditingController();
+  bool emotionalLevelVisible = true;
   late List<String> _emotionIds;
 
   @override
@@ -218,17 +219,26 @@ class _JournalEditCard extends State<JournalEditCard> {
                     //     ),
                     //   ),
                     //   child:
-                    Slider(
-                      // min: 0,
-                      max: 5,
-                      value: double.parse(
-                        viewModel.emotionalLevel.toString(),
+                    const Text('Emotional Level Visibility'),
+                    Checkbox.adaptive(
+                        value: emotionalLevelVisible,
+                        onChanged: (value) {
+                          setState(() {
+                            emotionalLevelVisible = value ?? true;
+                          });
+                        }),
+                    if (emotionalLevelVisible)
+                      Slider(
+                        // min: 0,
+                        max: 5,
+                        value: double.parse(
+                          viewModel.emotionalLevel.toString(),
+                        ),
+                        onChanged: (val) {
+                          viewModel.emotionalLevel = val.toInt();
+                          setState(() {});
+                        },
                       ),
-                      onChanged: (val) {
-                        viewModel.emotionalLevel = val.toInt();
-                        setState(() {});
-                      },
-                    ),
                     // ),
                     // Row(
                     //     mainAxisAlignment: MainAxisAlignment.center,

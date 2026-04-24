@@ -17,6 +17,7 @@ Topic _$TopicFromJson(Map<String, dynamic> json) => Topic(
       todos: (json['todos'] as List<dynamic>?)
           ?.map((e) => Todo.fromJson(e as Map<String, dynamic>))
           .toList(),
+      sensitiveTopic: json['sensitiveTopic'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$TopicToJson(Topic instance) => <String, dynamic>{
@@ -28,4 +29,5 @@ Map<String, dynamic> _$TopicToJson(Topic instance) => <String, dynamic>{
       'todos': instance.todos,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
+      'sensitiveTopic': instance.sensitiveTopic,
     };

@@ -81,66 +81,22 @@ class _TopicListViewState extends State<TopicListView> {
                           final topic = topicsList[index];
                           final completedTodos =
                               topic.todos.where((t) => t.isDone).length;
-                          return ListTile(
-                            title: Text(topic.title),
-                            subtitle: Text(
-                              '${topic.description}\nCreated: ${DateFormat.yMd().format(topic.createdAt)}',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: Wrap(
-                              spacing: 8,
-                              children: [
-                                if (topic.todos.isNotEmpty)
-                                  Chip(
-                                    label: Text(
-                                      '$completedTodos/${topic.todos.length} todos',
-                                    ),
-                                  ),
-                                if (topic.tags.isNotEmpty)
-                                  Chip(
-                                    label: Text('${topic.tags.length} tags'),
-                                  ),
-                                if (topic.color.isNotEmpty)
-                                  Chip(
-                                      label: SizedBox.fromSize(
-                                        size: Size.square(32),
+
+                          return TopicWidget(
+                              key: ValueKey(topic.id),
+                              topic: topic,
+                              completedTodos: completedTodos,
+                              onTap: () async => await Navigator.of(context)
+                                      .push(
+                                    MaterialPageRoute(
+                                      builder: (context) => TopicDetailView(
+                                        topic: topic,
                                       ),
-                                      backgroundColor: Color.fromARGB(
-                                          int.tryParse(topic.color.substring(2, 4),
-                                                      radix: 16)
-                                                  ?.toSigned(8) ??
-                                              0,
-                                          int.tryParse(topic.color.substring(4, 6),
-                                                      radix: 16)
-                                                  ?.toSigned(8) ??
-                                              0,
-                                          int.tryParse(topic.color.substring(6, 8),
-                                                      radix: 16)
-                                                  ?.toSigned(8) ??
-                                              0,
-                                          int.tryParse(
-                                                      topic.color
-                                                          .substring(8, 10),
-                                                      radix: 16)
-                                                  ?.toSigned(8) ??
-                                              0)),
-                              ],
-                            ),
-                            onTap: () {
-                              Navigator.of(context)
-                                  .push(
-                                MaterialPageRoute(
-                                  builder: (context) => TopicDetailView(
-                                    topic: topic,
-                                  ),
-                                ),
-                              )
-                                  .then((_) {
-                                viewModel.refresh();
-                              });
-                            },
-                          );
+                                    ),
+                                  )
+                                      .then((_) {
+                                    viewModel.refresh();
+                                  }));
                         },
                       );
                     },
@@ -352,6 +308,160 @@ class _TopicListViewState extends State<TopicListView> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class SensitiveTopicWidget extends StatelessWidget {
+  const SensitiveTopicWidget({
+    super.key,
+    required this.topic,
+    required this.completedTodos,
+    this.onTap,
+    this.onLongPress,
+  });
+
+  final Topic topic;
+  final int completedTodos;
+  final Function()? onTap;
+  final Function()? onLongPress;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      onLongPress: onLongPress,
+      child: ListTile(
+        title: Text('This topic is marked as sensitive. Tap to view details.'),
+        subtitle: Text(
+          '(sensitive)',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: Wrap(
+          spacing: 8,
+          children: [
+            if (!topic.sensitiveTopic && topic.todos.isNotEmpty)
+              Chip(
+                label: Text('(sensitive)'),
+              ),
+            // if (!topic.sensitiveTopic && topic.tags.isNotEmpty)
+            //   Chip(
+            //     label: Text('${topic.tags.length} tags'),
+            //   ),
+            if (topic.color.isNotEmpty)
+              Chip(
+                  label: SizedBox.fromSize(
+                    size: Size.square(32),
+                  ),
+                  // quite unsure if a neutral color like grey should be used for sensitive topics, but for now let's just keep the color.
+                  // might review this in the future
+                  backgroundColor: Color.fromARGB(
+                      int.tryParse(topic.color.substring(2, 4), radix: 16)
+                              ?.toSigned(8) ??
+                          0,
+                      int.tryParse(topic.color.substring(4, 6), radix: 16)
+                              ?.toSigned(8) ??
+                          0,
+                      int.tryParse(topic.color.substring(6, 8), radix: 16)
+                              ?.toSigned(8) ??
+                          0,
+                      int.tryParse(topic.color.substring(8, 10), radix: 16)
+                              ?.toSigned(8) ??
+                          0)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TopicWidget extends StatefulWidget {
+  const TopicWidget({
+    super.key,
+    required this.topic,
+    required this.completedTodos,
+    this.onTap,
+    this.onLongPress,
+  });
+
+  final Topic topic;
+  final int completedTodos;
+  final Function()? onTap;
+  final Function()? onLongPress;
+
+  @override
+  State<TopicWidget> createState() => _TopicWidgetState();
+}
+
+class _TopicWidgetState extends State<TopicWidget> {
+  bool hideSensitiveContent = true;
+
+  @override
+  void initState() {
+    super.initState();
+    hideSensitiveContent = !widget.topic.sensitiveTopic;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      key: ValueKey(widget.topic.id),
+      onTap: widget.onTap,
+      onLongPress: () {
+        setState(() {
+          hideSensitiveContent = !hideSensitiveContent;
+        });
+
+        widget.onLongPress?.call();
+      },
+      title: Text(!hideSensitiveContent
+          ? 'This topic is marked as sensitive. Tap to view details.'
+          : widget.topic.title),
+      subtitle: Text(
+        !hideSensitiveContent
+            ? '(sensitive)'
+            : '${widget.topic.description}\nCreated: ${DateFormat.yMd().format(widget.topic.createdAt)}',
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: Wrap(
+        spacing: 8,
+        children: [
+          if (!hideSensitiveContent && widget.topic.todos.isNotEmpty)
+            Chip(
+              label: Text(
+                widget.topic.sensitiveTopic
+                    ? '(sensitive)'
+                    : '${widget.completedTodos}/${widget.topic.todos.length} todos',
+              ),
+            ),
+          if (!hideSensitiveContent && widget.topic.tags.isNotEmpty)
+            Chip(
+              label: Text('${widget.topic.tags.length} tags'),
+            ),
+          if (widget.topic.color.isNotEmpty)
+            Chip(
+                label: SizedBox.fromSize(
+                  size: Size.square(32),
+                ),
+                // quite unsure if a neutral color like grey should be used for sensitive topics, but for now let's just keep the color.
+                // might review this in the future
+                backgroundColor: Color.fromARGB(
+                    int.tryParse(widget.topic.color.substring(2, 4), radix: 16)
+                            ?.toSigned(8) ??
+                        0,
+                    int.tryParse(widget.topic.color.substring(4, 6), radix: 16)
+                            ?.toSigned(8) ??
+                        0,
+                    int.tryParse(widget.topic.color.substring(6, 8), radix: 16)
+                            ?.toSigned(8) ??
+                        0,
+                    int.tryParse(widget.topic.color.substring(8, 10), radix: 16)
+                            ?.toSigned(8) ??
+                        0)),
+        ],
       ),
     );
   }

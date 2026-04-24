@@ -13,6 +13,7 @@ class Topic extends EntityBase<Topic> {
     required this.createdAt,
     required this.updatedAt,
     List<String>? tags,
+    this.sensitiveTopic = false,
     this.color = '0xFF1976D2', // Default blue color
     List<Todo>? todos,
   })  : tags = tags ?? [],
@@ -25,6 +26,7 @@ class Topic extends EntityBase<Topic> {
   List<Todo> todos;
   DateTime createdAt;
   DateTime updatedAt;
+  bool sensitiveTopic;
 
   @override
   factory Topic.fromJson(Map<String, dynamic> json) {
@@ -52,6 +54,7 @@ class Topic extends EntityBase<Topic> {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       color: '0xFF1976D2',
+      sensitiveTopic: false,
     );
   }
 }

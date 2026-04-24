@@ -21,6 +21,7 @@ class TopicDetailViewModel extends ChangeNotifier {
   List<String> get tags => _topic.tags;
   String get color => _topic.color;
   List<Todo> get todos => _topic.todos;
+  bool get sensitiveTopic => _topic.sensitiveTopic;
 
   set title(String value) {
     _topic.title = value;
@@ -34,6 +35,11 @@ class TopicDetailViewModel extends ChangeNotifier {
 
   set color(String value) {
     _topic.color = value;
+    notifyListeners();
+  }
+
+  set sensitiveTopic(bool value) {
+    _topic.sensitiveTopic = value;
     notifyListeners();
   }
 

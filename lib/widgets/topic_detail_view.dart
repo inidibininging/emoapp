@@ -174,6 +174,18 @@ class _TopicDetailViewState extends State<TopicDetailView> {
                           ),
                           const SizedBox(height: 16),
                           const Text(
+                            'Sensitive Topic',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Switch(
+                            value: viewModel.sensitiveTopic,
+                            onChanged: (value) {
+                              viewModel.sensitiveTopic = value;
+                              setState(() {});
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
                             'Tags',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
