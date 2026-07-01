@@ -1,8 +1,10 @@
 import 'package:emoapp/model/journal_colors.dart' as JournalColors;
 import 'package:emoapp/view_model/mindmap_view_model.dart';
+import 'package:emoapp/view_model/kanban_list_view_model.dart';
 import 'package:emoapp/widgets/topic_list_view.dart';
 import 'package:emoapp/widgets/journal_calendar.dart';
 import 'package:emoapp/widgets/mindmap/mindmap_screen.dart';
+import 'package:emoapp/widgets/kanban_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -69,6 +71,16 @@ class _DashboardState extends State<Dashboard> {
                 });
               },
             ),
+            ListTile(
+              title: const Text('Kanbans'),
+              leading: const Icon(Icons.view_kanban),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() {
+                  _selectedIndex = 3;
+                });
+              },
+            ),
           ],
         ),
       ),
@@ -80,6 +92,10 @@ class _DashboardState extends State<Dashboard> {
           ChangeNotifierProvider(
             create: (_) => MindmapViewModel(),
             child: const MindmapScreen(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => KanbanListViewModel(),
+            child: const KanbanListView(),
           ),
         ],
       ),
