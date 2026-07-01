@@ -1,35 +1,32 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'topic.dart';
+part of 'kanban.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Topic _$TopicFromJson(Map<String, dynamic> json) => Topic(
+Kanban _$KanbanFromJson(Map<String, dynamic> json) => Kanban(
       id: json['id'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String,
+      name: json['name'] as String,
+      topicId: json['topicId'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
-      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      color: json['color'] as String? ?? '0xFF1976D2',
       todos: (json['todos'] as List<dynamic>?)
           ?.map((e) => Todo.fromJson(e as Map<String, dynamic>))
           .toList(),
-      kanbans: (json['kanbans'] as List<dynamic>?)
-          ?.map((e) => Kanban.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      states: (json['states'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          List<String>.from(kDefaultKanbanStates),
     );
 
-Map<String, dynamic> _$TopicToJson(Topic instance) => <String, dynamic>{
+Map<String, dynamic> _$KanbanToJson(Kanban instance) => <String, dynamic>{
       'id': instance.id,
-      'title': instance.title,
-      'description': instance.description,
-      'tags': instance.tags,
-      'color': instance.color,
+      'name': instance.name,
+      'topicId': instance.topicId,
       'todos': instance.todos,
-      'kanbans': instance.kanbans,
+      'states': instance.states,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
     };

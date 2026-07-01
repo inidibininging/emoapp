@@ -60,7 +60,7 @@ class _MindmapViewState extends State<MindmapView> {
     for (final idea in viewModel.ideas) {
       final dx = idea.positionX - canvasX;
       final dy = idea.positionY - canvasY;
-      final distance = (dx * dx + dy * dy).sqrt();
+      final distance = sqrt(dx * dx + dy * dy);
       
       if (distance <= 40) {
         tappedOnIdea = true;
@@ -110,7 +110,7 @@ class _MindmapViewState extends State<MindmapView> {
                       
                       final dx = idea.positionX - canvasX;
                       final dy = idea.positionY - canvasY;
-                      final distance = (dx * dx + dy * dy).sqrt();
+                      final distance = sqrt(dx * dx + dy * dy);
                       
                       if (distance <= 40) {
                         viewModel.startMovingIdea(idea);

@@ -5,6 +5,7 @@ import 'package:emoapp/services/journal_entry_extended_service.dart';
 import 'package:emoapp/view_model/topic_detail_view_model.dart';
 import 'package:emoapp/widgets/journal_card.dart';
 import 'package:emoapp/widgets/journal_edit_card.dart';
+import 'package:emoapp/widgets/kanban_section.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
@@ -281,6 +282,8 @@ class _TopicDetailViewState extends State<TopicDetailView> {
                               padding: EdgeInsets.all(16.0),
                               child: Text('No todos yet'),
                             ),
+                          const SizedBox(height: 24),
+                          const KanbanSection(),
                           const SizedBox(height: 24),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,10 +1,11 @@
 # This is a generated file; do not edit or check into version control.
-path_provider=/home/develop/.pub-cache/hosted/pub.dev/path_provider-2.1.5/
-path_provider_android=/home/develop/.pub-cache/hosted/pub.dev/path_provider_android-2.2.15/
-path_provider_foundation=/home/develop/.pub-cache/hosted/pub.dev/path_provider_foundation-2.4.1/
-path_provider_linux=/home/develop/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1/
-path_provider_windows=/home/develop/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/
-permission_handler=/home/develop/.pub-cache/hosted/pub.dev/permission_handler-10.4.5/
-permission_handler_android=/home/develop/.pub-cache/hosted/pub.dev/permission_handler_android-10.3.6/
-permission_handler_apple=/home/develop/.pub-cache/hosted/pub.dev/permission_handler_apple-9.1.4/
-permission_handler_windows=/home/develop/.pub-cache/hosted/pub.dev/permission_handler_windows-0.1.3/
+path_provider=/data/data/com.termux/files/home/.pub-cache/hosted/pub.dev/path_provider-2.1.5/
+path_provider_android=/data/data/com.termux/files/home/.pub-cache/hosted/pub.dev/path_provider_android-2.2.19/
+path_provider_foundation=/data/data/com.termux/files/home/.pub-cache/hosted/pub.dev/path_provider_foundation-2.4.2/
+path_provider_linux=/data/data/com.termux/files/home/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1/
+path_provider_windows=/data/data/com.termux/files/home/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/
+permission_handler=/data/data/com.termux/files/home/.pub-cache/hosted/pub.dev/permission_handler-12.0.1/
+permission_handler_android=/data/data/com.termux/files/home/.pub-cache/hosted/pub.dev/permission_handler_android-13.0.1/
+permission_handler_apple=/data/data/com.termux/files/home/.pub-cache/hosted/pub.dev/permission_handler_apple-9.4.7/
+permission_handler_html=/data/data/com.termux/files/home/.pub-cache/hosted/pub.dev/permission_handler_html-0.1.3+5/
+permission_handler_windows=/data/data/com.termux/files/home/.pub-cache/hosted/pub.dev/permission_handler_windows-0.2.1/

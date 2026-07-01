@@ -1,4 +1,5 @@
 import 'package:emoapp/model/entity_base.dart';
+import 'package:emoapp/model/kanban.dart';
 import 'package:emoapp/model/todo.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -15,14 +16,21 @@ class Topic extends EntityBase<Topic> {
     List<String>? tags,
     this.color = '0xFF1976D2', // Default blue color
     List<Todo>? todos,
+    List<Kanban>? kanbans,
   })  : tags = tags ?? [],
-        todos = todos ?? [];
+        todos = todos ?? [],
+        kanbans = kanbans ?? [];
 
   String title;
   String description;
   List<String> tags;
   String color; // Hex color code stored as string
   List<Todo> todos;
+
+  /// Kanbans attached to this topic. Each kanban has its own independent todos
+  /// and lives as a separate entity (see [Kanban]).
+  List<Kanban> kanbans;
+
   DateTime createdAt;
   DateTime updatedAt;
 

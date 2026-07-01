@@ -5,6 +5,7 @@ import 'package:emoapp/model/discussion/discussion_message.dart';
 import 'package:emoapp/model/entity_base_type.dart';
 import 'package:emoapp/model/journal_entry_extended.dart';
 import 'package:emoapp/model/journal_type.dart';
+import 'package:emoapp/model/kanban.dart';
 import 'package:emoapp/model/topic.dart';
 import 'package:emoapp/model/emotion.dart';
 import 'package:emoapp/model/default_emotions.dart';
@@ -65,6 +66,7 @@ class ServiceLocatorRegistrar {
     await registerEmotion();
     await registerIdea();
     await registerVisibilityGroup();
+    await registerKanban();
   }
 
   /// used for registering entity instantiation with or without parameters
@@ -403,6 +405,21 @@ class ServiceLocatorRegistrar {
     GetIt.instance.registerFactoryParam<Idea, Map<String, dynamic>, void>(
         (json, _) => Idea.fromJson(json),
         instanceName: "${Idea}Json");
+  }
+
+  Future<void> registerKanban() async {
+    registerEntityInvocatorWithParams<Kanban,
+        (String name, String topicId)>(
+      ((String name, String topicId) params) => Kanban.create(
+        name: params.$1,
+        topicId: params.$2,
+      ),
+      'kanban-box',
+    );
+
+    GetIt.instance.registerFactoryParam<Kanban, Map<String, dynamic>, void>(
+        (json, _) => Kanban.fromJson(json),
+        instanceName: "${Kanban}Json");
   }
 }
 
