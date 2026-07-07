@@ -15,10 +15,8 @@ Kanban _$KanbanFromJson(Map<String, dynamic> json) => Kanban(
       todos: (json['todos'] as List<dynamic>?)
           ?.map((e) => Todo.fromJson(e as Map<String, dynamic>))
           .toList(),
-      states: (json['states'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          List<String>.from(kDefaultKanbanStates),
+      states:
+          (json['states'] as List<dynamic>?)?.map((e) => e as String).toList(),
     );
 
 Map<String, dynamic> _$KanbanToJson(Kanban instance) => <String, dynamic>{

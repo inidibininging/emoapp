@@ -12,8 +12,7 @@ Reference _$ReferenceFromJson(Map<String, dynamic> json) => Reference(
       ideaUuid: json['ideaUuid'] as String,
     );
 
-Map<String, dynamic> _$ReferenceToJson(Reference instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ReferenceToJson(Reference instance) => <String, dynamic>{
       'id': instance.id,
       'text': instance.text,
       'ideaUuid': instance.ideaUuid,
